@@ -1,0 +1,1139 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>그린스텝 — 화면 미리보기</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Gasoek+One&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /*
+       * 그린스텝 미리보기 — 리소그래프 인쇄물의 어휘.
+       * 잉크 3색, 그라데이션 없음, 판이 어긋난 자리에서 제3의 색이 난다.
+       * 실제 앱과 같은 토큰을 쓴다.
+       */
+      :root {
+        --paper: #edefe6;
+        --paper-sunk: #e3e7d9;
+        --ink: #16241b;
+        --ink-soft: #16241b8c;
+        --green: #00a95c;
+        --pink: #ff48b0;
+        --blue: #3d5588;
+        --rule: #16241b2e;
+        --overprint: multiply;
+        --grain: 0.5;
+        --shell: #dfe3d6;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --paper: #131611;
+          --paper-sunk: #1c211a;
+          --ink: #edefe6;
+          --ink-soft: #edefe68c;
+          --green: #2ad07f;
+          --pink: #ff6ec0;
+          --blue: #93a9dd;
+          --rule: #edefe62e;
+          --overprint: screen;
+          --grain: 0.22;
+          --shell: #0c0e0a;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--shell);
+        color: var(--ink);
+        font-family: "IBM Plex Sans KR", system-ui, sans-serif;
+        word-break: keep-all;
+        overflow-wrap: break-word;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        pointer-events: none;
+        opacity: var(--grain);
+        mix-blend-mode: var(--overprint);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+      }
+
+      /* 오버프린트: 이 디자인의 서명. 워드마크에만 쓴다. */
+      .overprint {
+        position: relative;
+        display: inline-block;
+        font-family: "Gasoek One", system-ui, sans-serif;
+        color: var(--green);
+        line-height: 1;
+      }
+      .overprint::before {
+        content: attr(data-text);
+        position: absolute;
+        left: 0.055em;
+        top: 0.045em;
+        color: var(--pink);
+        mix-blend-mode: var(--overprint);
+        pointer-events: none;
+      }
+
+      .page {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 56px 24px 96px;
+      }
+
+      header.intro {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        max-width: 640px;
+        margin-bottom: 56px;
+      }
+      .intro h1 {
+        font-size: clamp(2rem, 6vw, 2.75rem);
+      }
+      .intro .thesis {
+        font-size: 1.15rem;
+        line-height: 1.7;
+        font-weight: 500;
+      }
+      .intro .thesis em {
+        font-family: "Gasoek One", system-ui, sans-serif;
+        font-style: normal;
+        color: var(--green);
+        font-size: 1.35rem;
+      }
+      .intro p.meta {
+        color: var(--ink-soft);
+        font-size: 0.9rem;
+        line-height: 1.7;
+      }
+
+      .swatches {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 4px;
+      }
+      .swatch {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.72rem;
+        color: var(--ink-soft);
+      }
+      .swatch i {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--ink);
+        display: block;
+      }
+
+      .screens {
+        display: grid;
+        gap: 44px 32px;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        align-items: start;
+      }
+
+      figure {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      figcaption {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      figcaption b {
+        font-size: 0.95rem;
+      }
+      figcaption span {
+        color: var(--ink-soft);
+        font-size: 0.82rem;
+        line-height: 1.6;
+      }
+      figcaption code {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--blue);
+      }
+
+      /* 화면틀.
+         높이를 고정하면 내용이 긴 화면이 잘린다. 최소 높이만 주고 내용에
+         맞춰 늘어나게 둔다. */
+      .phone {
+        background: var(--paper);
+        border: 2px solid var(--ink);
+        border-radius: 6px;
+        min-height: 620px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+      .phone.tall {
+        min-height: 700px;
+      }
+      .screen {
+        flex: 1;
+        padding: 22px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .screen.centered {
+        justify-content: center;
+      }
+
+      /* 공통 조각 */
+      .mark {
+        font-size: 1.1rem;
+      }
+      .h1 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        line-height: 1.3;
+      }
+      .h2 {
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+      .soft {
+        color: var(--ink-soft);
+        font-size: 0.82rem;
+        line-height: 1.6;
+      }
+      .rule {
+        height: 1px;
+        background: var(--rule);
+      }
+      .label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--ink-soft);
+        letter-spacing: 0.02em;
+      }
+      .field {
+        border: 2px solid var(--rule);
+        background: var(--paper-sunk);
+        border-radius: 3px;
+        padding: 12px 14px;
+        font-size: 0.95rem;
+      }
+      .field.focus {
+        border-color: var(--green);
+      }
+      .field.code {
+        font-family: "IBM Plex Mono", monospace;
+        text-align: center;
+        letter-spacing: 0.3em;
+        font-size: 1.15rem;
+      }
+      .field.placeholder {
+        color: var(--ink-soft);
+        opacity: 0.55;
+      }
+      .btn {
+        background: var(--green);
+        color: var(--paper);
+        border-radius: 3px;
+        padding: 14px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: var(--ink);
+        border: 2px solid var(--ink);
+      }
+      .stack {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .grow {
+        flex: 1;
+        min-width: 0;
+      }
+      .mono {
+        font-family: "IBM Plex Mono", monospace;
+      }
+      .display {
+        font-family: "Gasoek One", system-ui, sans-serif;
+        line-height: 1;
+      }
+      .green {
+        color: var(--green);
+      }
+      .blue {
+        color: var(--blue);
+      }
+
+      /* 드롭다운 3개 */
+      .slots {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      .slot .field {
+        text-align: center;
+        position: relative;
+        padding-right: 26px;
+      }
+      .slot .field::after {
+        content: "▾";
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--ink-soft);
+        font-size: 0.75rem;
+      }
+      .slot .label {
+        font-size: 0.68rem;
+        margin-bottom: 4px;
+        display: block;
+      }
+
+      /* 실천 항목 카드 + 도장 */
+      .card {
+        border: 2px solid var(--rule);
+        background: var(--paper-sunk);
+        border-radius: 3px;
+        padding: 13px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .card .icon {
+        font-size: 1.35rem;
+      }
+      .card .title {
+        font-weight: 600;
+        font-size: 0.92rem;
+      }
+      .card .meta {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.68rem;
+        color: var(--ink-soft);
+      }
+
+      .stamp {
+        width: 40px;
+        height: 40px;
+        flex: none;
+        border: 2px solid var(--rule);
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+      }
+      .stamp.on {
+        position: relative;
+        border-color: var(--green);
+        color: var(--green);
+        transform: rotate(-9deg);
+        font-size: 1.15rem;
+      }
+      .stamp.on::after {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        border: 2px solid var(--pink);
+        border-radius: 999px;
+        transform: translate(2px, 2px);
+        mix-blend-mode: var(--overprint);
+      }
+
+      /* 게이지 */
+      .gauge {
+        height: 20px;
+        border: 2px solid var(--ink);
+      }
+      .gauge i {
+        display: block;
+        height: 100%;
+        background: var(--green);
+      }
+
+      /* 순위표 */
+      .rank {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--rule);
+        font-size: 0.88rem;
+      }
+      .rank.me {
+        background: var(--paper-sunk);
+        border-left: 4px solid var(--green);
+        margin: 0 -12px;
+        padding: 9px 12px;
+      }
+      .rank .no {
+        width: 26px;
+        text-align: center;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.78rem;
+        color: var(--ink-soft);
+      }
+      .rank .no.top {
+        font-family: "Gasoek One", system-ui, sans-serif;
+        color: var(--green);
+        font-size: 1rem;
+      }
+      .rank .pts {
+        text-align: right;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .rank .pts small {
+        display: block;
+        font-family: "IBM Plex Mono", monospace;
+        font-weight: 400;
+        font-size: 0.66rem;
+        color: var(--ink-soft);
+      }
+
+      /* 달력 */
+      .cal {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+      }
+      .cal div {
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        font-size: 0.68rem;
+        border: 1px solid var(--rule);
+        border-radius: 3px;
+        color: var(--ink-soft);
+      }
+      .cal .wd {
+        border: 0;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.62rem;
+      }
+      .cal .none {
+        border: 0;
+      }
+      .cal .d1 {
+        border-color: var(--green);
+        background: color-mix(in srgb, var(--green) 25%, transparent);
+        color: var(--ink);
+        font-family: "Gasoek One", system-ui, sans-serif;
+      }
+      .cal .d2 {
+        border-color: var(--green);
+        background: color-mix(in srgb, var(--green) 55%, transparent);
+        color: var(--paper);
+        font-family: "Gasoek One", system-ui, sans-serif;
+      }
+      .cal .d4 {
+        border-color: var(--green);
+        background: var(--green);
+        color: var(--paper);
+        font-family: "Gasoek One", system-ui, sans-serif;
+      }
+      .cal .today {
+        outline: 2px solid var(--green);
+        outline-offset: 1px;
+      }
+
+      /* 피드 */
+      .shot {
+        border: 2px solid var(--rule);
+        border-radius: 3px;
+        height: 130px;
+        background: repeating-linear-gradient(
+          -45deg,
+          color-mix(in srgb, var(--green) 22%, transparent) 0 10px,
+          transparent 10px 20px
+        );
+        display: grid;
+        place-items: center;
+        color: var(--ink-soft);
+        font-size: 0.72rem;
+      }
+
+      /* 통계 타일 */
+      .tiles {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      .tile {
+        border: 2px solid var(--rule);
+        border-radius: 3px;
+        padding: 10px;
+      }
+      .tile b {
+        display: block;
+        font-family: "Gasoek One", system-ui, sans-serif;
+        font-size: 1.15rem;
+        font-weight: 400;
+        margin-top: 4px;
+      }
+      .tile span {
+        font-size: 0.68rem;
+        color: var(--ink-soft);
+      }
+
+      /* 하단 탭 */
+      .tabs {
+        border-top: 2px solid var(--rule);
+        display: flex;
+        background: var(--paper);
+      }
+      .tabs div {
+        flex: 1;
+        text-align: center;
+        padding: 10px 0 12px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--ink-soft);
+      }
+      .tabs div.on {
+        color: var(--green);
+      }
+      .tabs i {
+        display: block;
+        width: 26px;
+        height: 4px;
+        border-radius: 999px;
+        margin: 0 auto 6px;
+        background: transparent;
+      }
+      .tabs div.on i {
+        background: var(--green);
+      }
+
+      /* 관리자 표 */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.75rem;
+      }
+      th {
+        text-align: left;
+        color: var(--ink-soft);
+        font-weight: 600;
+        padding: 6px 6px 6px 0;
+        border-bottom: 2px solid var(--rule);
+      }
+      td {
+        padding: 7px 6px 7px 0;
+        border-bottom: 1px solid var(--rule);
+      }
+      td.m {
+        font-family: "IBM Plex Mono", monospace;
+      }
+
+      footer {
+        margin-top: 64px;
+        padding-top: 24px;
+        border-top: 2px solid var(--rule);
+        color: var(--ink-soft);
+        font-size: 0.85rem;
+        line-height: 1.8;
+      }
+      footer a {
+        color: var(--blue);
+      }
+      .note {
+        border-left: 4px solid var(--pink);
+        padding-left: 14px;
+        margin: 40px 0;
+        max-width: 640px;
+        font-size: 0.9rem;
+        line-height: 1.75;
+      }
+      .note b {
+        display: block;
+        margin-bottom: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="intro">
+        <span class="overprint mark" data-text="그린스텝" style="font-size: 2rem"
+          >그린스텝</span
+        >
+        <h1 class="display">화면 미리보기</h1>
+
+        <p class="thesis">
+          오늘 텀블러 한 번이 <em>25g</em>입니다.<br />
+          <span style="color: var(--ink-soft)"
+            >혼자서는 그램이지만, 다 같이 모으면 킬로그램이 됩니다.</span
+          >
+        </p>
+
+        <p class="meta">
+          학교·회사가 기간을 정해 여는 친환경 실천 캠페인 웹앱. 참가자는
+          초대코드를 넣고 학년·반·번호를 고르면 바로 참가합니다 — 가입도
+          비밀번호도 없습니다.
+        </p>
+
+        <p class="meta">
+          디자인 방향은 <b>리소그래프로 인쇄한 캠페인 포스터</b>입니다. 잉크
+          3색, 그라데이션 없음, 판이 어긋난 자리에서 제3의 색이 나는 오버프린트를
+          워드마크에 딱 한 번 씁니다.
+        </p>
+
+        <div class="swatches">
+          <span class="swatch"
+            ><i style="background: #00a95c"></i>Riso Green #00A95C</span
+          >
+          <span class="swatch"
+            ><i style="background: #ff48b0"></i>Fluorescent Pink #FF48B0</span
+          >
+          <span class="swatch"
+            ><i style="background: #3d5588"></i>Federal Blue #3D5588</span
+          >
+          <span class="swatch"
+            ><i style="background: #edefe6"></i>재생지 #EDEFE6</span
+          >
+        </div>
+
+        <p class="meta">
+          Gasoek One(포스터용 국문 디스플레이 · 워드마크와 숫자에만) + IBM Plex
+          Sans KR(본문) + IBM Plex Mono(코드 — 코드니까 실제로 모노가 의미를
+          가짐)
+        </p>
+      </header>
+
+      <div class="screens">
+        <!-- 1. 초대코드 -->
+        <figure>
+          <div class="phone">
+            <div class="screen centered">
+              <span class="overprint" data-text="그린스텝" style="font-size: 1.7rem"
+                >그린스텝</span
+              >
+              <p style="font-size: 1.05rem; font-weight: 500; line-height: 1.6">
+                오늘 텀블러 한 번이
+                <span class="display green" style="font-size: 1.3rem">25g</span
+                >입니다.<br />
+                <span class="soft"
+                  >혼자서는 그램이지만, 다 같이 모으면 킬로그램이 됩니다.</span
+                >
+              </p>
+              <div class="rule"></div>
+              <div class="stack">
+                <span class="label">초대코드</span>
+                <div class="field code focus">GREEN2026</div>
+              </div>
+              <div class="btn">캠페인 확인</div>
+              <p class="soft">
+                초대코드는 선생님이나 캠페인 운영자에게 받으세요. 가입도
+                비밀번호도 없이 학년·반·번호만 고르면 참가됩니다.
+              </p>
+            </div>
+          </div>
+          <figcaption>
+            <b>초대코드 입력</b>
+            <span
+              >페이지가 하는 일이 하나뿐이라 코드 칸이 주인공입니다. 코드니까
+              모노 서체에 자간을 벌렸습니다.</span
+            >
+            <code>/</code>
+          </figcaption>
+        </figure>
+
+        <!-- 2. 참가 (핵심) -->
+        <figure>
+          <div class="phone">
+            <div class="screen">
+              <span class="overprint" data-text="그린스텝" style="font-size: 1.3rem"
+                >그린스텝</span
+              >
+
+              <div style="border-left: 4px solid var(--green); padding-left: 14px">
+                <p class="mono soft" style="letter-spacing: 0.2em">GREEN2026</p>
+                <p class="h1" style="margin: 4px 0">2026 그린스텝 캠페인</p>
+                <p class="soft">
+                  8월 1일 – 8월 31일 ·
+                  <span class="display blue" style="font-size: 0.95rem">24명</span>
+                  참여 중
+                </p>
+              </div>
+
+              <div class="stack">
+                <span class="label">학년 · 반 · 번호</span>
+                <div class="slots">
+                  <div class="slot">
+                    <span class="label">학년</span>
+                    <div class="field">3학년</div>
+                  </div>
+                  <div class="slot">
+                    <span class="label">반</span>
+                    <div class="field">2반</div>
+                  </div>
+                  <div class="slot">
+                    <span class="label">번호</span>
+                    <div class="field">15번</div>
+                  </div>
+                </div>
+                <p class="soft">
+                  다음에 다시 들어올 때도 같은 번호를 고르면 내 기록이 이어집니다.
+                </p>
+              </div>
+
+              <div class="stack">
+                <span class="label">닉네임</span>
+                <div class="field focus">초록발자국</div>
+                <p class="soft">
+                  같은 캠페인 참가자들에게 보입니다. 20자까지 쓸 수 있어요.
+                </p>
+              </div>
+
+              <div class="btn">캠페인 참가</div>
+            </div>
+          </div>
+          <figcaption>
+            <b>참가 — 학년·반·번호 + 닉네임</b>
+            <span
+              >이메일도 비밀번호도 받지 않습니다. 자리로 결정되는 내부 계정을
+              서버가 대신 만들어 로그인시키므로 세션과 RLS는 그대로
+              유지됩니다.</span
+            >
+            <code>/join/GREEN2026</code>
+          </figcaption>
+        </figure>
+
+        <!-- 3. 오늘 -->
+        <figure>
+          <div class="phone">
+            <div class="screen" style="gap: 14px">
+              <span class="overprint" data-text="그린스텝" style="font-size: 1.1rem"
+                >그린스텝</span
+              >
+              <div class="row" style="align-items: flex-end">
+                <div class="grow">
+                  <p class="h1">8월 5일</p>
+                  <p class="soft">초록발자국님 · 2026 그린스텝 캠페인</p>
+                </div>
+                <p class="display green" style="font-size: 1.9rem">
+                  3<span class="soft" style="font-size: 1rem">/8</span>
+                </p>
+              </div>
+              <div class="rule"></div>
+
+              <div class="stack">
+                <div class="card">
+                  <span class="icon">☕</span>
+                  <span class="grow">
+                    <span class="title" style="display: block">텀블러 사용</span>
+                    <span class="meta">3점 · 25g</span>
+                  </span>
+                  <span class="stamp on">✓</span>
+                </div>
+                <div class="card">
+                  <span class="icon">🚌</span>
+                  <span class="grow">
+                    <span class="title" style="display: block"
+                      >대중교통·도보 이동</span
+                    >
+                    <span class="meta">5점 · 1,200g</span>
+                  </span>
+                  <span class="stamp on">✓</span>
+                </div>
+                <div class="card">
+                  <span class="icon">🥗</span>
+                  <span class="grow">
+                    <span class="title" style="display: block">채식 한 끼</span>
+                    <span class="meta">4점 · 900g</span>
+                  </span>
+                  <span class="stamp on">✓</span>
+                </div>
+                <div class="card">
+                  <span class="icon">🥡</span>
+                  <span class="grow">
+                    <span class="title" style="display: block">다회용기 사용</span>
+                    <span class="meta">3점 · 40g</span>
+                  </span>
+                  <span class="stamp"></span>
+                </div>
+                <p class="soft" style="padding-left: 4px">
+                  사진·메모와 함께 남기기
+                </p>
+                <div class="card">
+                  <span class="icon">♻️</span>
+                  <span class="grow">
+                    <span class="title" style="display: block">분리배출 실천</span>
+                    <span class="meta">2점 · 100g</span>
+                  </span>
+                  <span class="stamp"></span>
+                </div>
+              </div>
+            </div>
+            <div class="tabs">
+              <div class="on"><i></i>오늘</div>
+              <div><i></i>피드</div>
+              <div><i></i>순위</div>
+              <div><i></i>나</div>
+            </div>
+          </div>
+          <figcaption>
+            <b>오늘의 실천</b>
+            <span
+              >카드를 탭하면 도장이 찍힙니다. 손으로 찍은 도장처럼 살짝 기울고,
+              두 번째 잉크판이 어긋나 겹칩니다.</span
+            >
+            <code>/today</code>
+          </figcaption>
+        </figure>
+
+        <!-- 4. 순위 -->
+        <figure>
+          <div class="phone">
+            <div class="screen" style="gap: 14px">
+              <div>
+                <p class="h1">함께 모은 결과</p>
+                <p class="soft">
+                  2026 그린스텝 캠페인 · 참가자 24명 · 실천 312회
+                </p>
+              </div>
+
+              <div class="stack" style="gap: 12px">
+                <div class="row" style="align-items: baseline; gap: 8px">
+                  <span class="display green" style="font-size: 2.2rem">128kg</span>
+                  <span class="soft">/ 목표 500kg</span>
+                </div>
+                <div class="gauge"><i style="width: 26%"></i></div>
+                <div class="row">
+                  <span class="grow" style="font-size: 0.85rem"
+                    >소나무 19.4그루가 1년간 흡수할 양</span
+                  >
+                  <span class="mono soft" style="font-weight: 600">26%</span>
+                </div>
+                <p class="soft" style="font-size: 0.72rem">
+                  CO2 절감량은 실천 항목별 환산 추정치입니다.
+                </p>
+              </div>
+
+              <p class="h2">순위</p>
+              <div>
+                <div class="rank">
+                  <span class="no top">1</span
+                  ><span class="grow" style="font-weight: 600">바람돌이</span>
+                  <span class="pts">96점<small>21kg · 28회</small></span>
+                </div>
+                <div class="rank">
+                  <span class="no top">2</span
+                  ><span class="grow" style="font-weight: 600">텀블러왕</span>
+                  <span class="pts">88점<small>18kg · 26회</small></span>
+                </div>
+                <div class="rank">
+                  <span class="no top">3</span
+                  ><span class="grow" style="font-weight: 600">우리반1등</span>
+                  <span class="pts">74점<small>15kg · 22회</small></span>
+                </div>
+                <div class="rank me">
+                  <span class="no">4</span
+                  ><span class="grow" style="font-weight: 600"
+                    >초록발자국 <span class="green" style="font-size: 0.8rem">나</span></span
+                  >
+                  <span class="pts">71점<small>14kg · 21회</small></span>
+                </div>
+                <div class="rank">
+                  <span class="no">5</span
+                  ><span class="grow" style="font-weight: 600">분리배출러</span>
+                  <span class="pts">63점<small>12kg · 19회</small></span>
+                </div>
+              </div>
+            </div>
+            <div class="tabs">
+              <div><i></i>오늘</div>
+              <div><i></i>피드</div>
+              <div class="on"><i></i>순위</div>
+              <div><i></i>나</div>
+            </div>
+          </div>
+          <figcaption>
+            <b>공동 게이지 + 순위</b>
+            <span
+              >그램만 띄우면 크기를 가늠할 수 없어 소나무로 환산합니다. 20위
+              밖이어도 내 순위는 아래에 고정됩니다.</span
+            >
+            <code>/board</code>
+          </figcaption>
+        </figure>
+
+        <!-- 5. 피드 -->
+        <figure>
+          <div class="phone">
+            <div class="screen" style="gap: 16px">
+              <div>
+                <p class="h1">인증 피드</p>
+                <p class="soft">2026 그린스텝 캠페인 참가자들이 남긴 기록</p>
+              </div>
+
+              <div class="stack" style="gap: 8px">
+                <div class="shot">인증샷</div>
+                <div class="row" style="gap: 8px; align-items: baseline">
+                  <span>🥗</span><b style="font-size: 0.9rem">텀블러왕</b>
+                  <span class="soft">채식 한 끼</span>
+                </div>
+                <p style="font-size: 0.85rem">오늘 점심은 비빔밥</p>
+              </div>
+
+              <div class="stack" style="gap: 8px">
+                <div class="shot">인증샷</div>
+                <div class="row" style="gap: 8px; align-items: baseline">
+                  <span>☕</span><b style="font-size: 0.9rem">바람돌이</b>
+                  <span class="soft">텀블러 사용</span>
+                </div>
+                <p style="font-size: 0.85rem">일주일째 안 빼먹는 중</p>
+              </div>
+            </div>
+            <div class="tabs">
+              <div><i></i>오늘</div>
+              <div class="on"><i></i>피드</div>
+              <div><i></i>순위</div>
+              <div><i></i>나</div>
+            </div>
+          </div>
+          <figcaption>
+            <b>인증 피드</b>
+            <span
+              >사진은 브라우저에서 1200px WebP로 줄여 올리고, 비공개 버킷이라
+              볼 때마다 서명 URL을 새로 만듭니다.</span
+            >
+            <code>/feed</code>
+          </figcaption>
+        </figure>
+
+        <!-- 6. 내 기록 -->
+        <figure>
+          <div class="phone">
+            <div class="screen" style="gap: 16px">
+              <div>
+                <p class="h1">초록발자국님의 기록</p>
+                <p class="soft">3학년 2반 15번 · 2026 그린스텝 캠페인</p>
+                <p class="soft">8월 1일 – 8월 31일</p>
+              </div>
+
+              <div class="tiles">
+                <div class="tile"><span>점수</span><b>71</b></div>
+                <div class="tile"><span>실천</span><b>21회</b></div>
+                <div class="tile"><span>순위</span><b>4위</b></div>
+              </div>
+
+              <div style="border-left: 4px solid var(--green); padding-left: 14px">
+                <p class="display green" style="font-size: 1.5rem">14kg</p>
+                <p class="soft">소나무 2.1그루가 1년간 흡수할 양</p>
+              </div>
+
+              <p class="h2">실천 달력</p>
+              <div>
+                <p style="font-weight: 600; font-size: 0.85rem; margin-bottom: 6px">
+                  8월
+                </p>
+                <div class="cal">
+                  <div class="wd">일</div>
+                  <div class="wd">월</div>
+                  <div class="wd">화</div>
+                  <div class="wd">수</div>
+                  <div class="wd">목</div>
+                  <div class="wd">금</div>
+                  <div class="wd">토</div>
+                  <div class="none"></div>
+                  <div class="none"></div>
+                  <div class="none"></div>
+                  <div class="none"></div>
+                  <div class="none"></div>
+                  <div class="none"></div>
+                  <div class="d2">2</div>
+                  <div class="d1">1</div>
+                  <div class="d4">4</div>
+                  <div class="d2">3</div>
+                  <div class="d2 today">3</div>
+                  <div>6</div>
+                  <div>7</div>
+                  <div>8</div>
+                  <div>9</div>
+                  <div>10</div>
+                  <div>11</div>
+                  <div>12</div>
+                  <div>13</div>
+                  <div>14</div>
+                  <div>15</div>
+                </div>
+              </div>
+            </div>
+            <div class="tabs">
+              <div><i></i>오늘</div>
+              <div><i></i>피드</div>
+              <div><i></i>순위</div>
+              <div class="on"><i></i>나</div>
+            </div>
+          </div>
+          <figcaption>
+            <b>내 기록</b>
+            <span
+              >스탬프 카드를 한 달치로 펼친 달력. 하루에 몇 개를 찍었는지에 따라
+              잉크가 진해집니다.</span
+            >
+            <code>/me</code>
+          </figcaption>
+        </figure>
+
+        <!-- 7. 관리자 -->
+        <figure>
+          <div class="phone tall">
+            <div class="screen" style="gap: 16px">
+              <div class="row">
+                <span
+                  class="overprint grow"
+                  data-text="그린스텝"
+                  style="font-size: 1.1rem"
+                  >그린스텝</span
+                >
+                <span class="soft" style="text-decoration: underline">나가기</span>
+              </div>
+
+              <div>
+                <p class="h1">2026 그린스텝 캠페인</p>
+                <p class="soft">캠페인 관리</p>
+              </div>
+
+              <div style="border-left: 4px solid var(--green); padding-left: 14px">
+                <p class="soft">참가자에게 알려줄 초대코드</p>
+                <p
+                  class="mono"
+                  style="font-size: 1.35rem; font-weight: 600; letter-spacing: 0.2em"
+                >
+                  GREEN2026
+                </p>
+              </div>
+
+              <div class="tiles">
+                <div class="tile"><span>참가자</span><b>24명</b></div>
+                <div class="tile"><span>실천</span><b>312회</b></div>
+                <div class="tile"><span>누적 절감</span><b>128kg</b></div>
+              </div>
+
+              <p class="h2">실천 항목</p>
+              <p class="soft" style="margin-top: -8px">
+                점수와 절감량은 체크인 시점의 값이 기록으로 남습니다. 여기서 값을
+                바꿔도 지난 기록과 순위는 변하지 않습니다.
+              </p>
+
+              <div
+                style="
+                  border: 2px solid var(--rule);
+                  border-radius: 3px;
+                  padding: 12px;
+                "
+                class="stack"
+              >
+                <div class="row" style="gap: 8px">
+                  <div class="field" style="width: 52px; text-align: center">☕</div>
+                  <div class="field grow">텀블러 사용</div>
+                </div>
+                <div class="row" style="gap: 8px">
+                  <div class="field grow">3</div>
+                  <div class="field grow">25</div>
+                  <div class="field grow">1</div>
+                </div>
+                <p class="soft">
+                  이미 실천 기록이 있어 삭제할 수 없습니다. 더 쓰지 않으려면
+                  체크박스를 꺼주세요.
+                </p>
+              </div>
+
+              <p class="h2">참가자 현황 (24명)</p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>자리</th>
+                    <th>닉네임</th>
+                    <th>점수</th>
+                    <th>실천</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="m">3학년 2반 15번</td>
+                    <td style="font-weight: 600">초록발자국</td>
+                    <td class="m">71</td>
+                    <td class="m">21</td>
+                  </tr>
+                  <tr>
+                    <td class="m">3학년 2반 18번</td>
+                    <td style="font-weight: 600">바람돌이</td>
+                    <td class="m">96</td>
+                    <td class="m">28</td>
+                  </tr>
+                  <tr>
+                    <td class="m">4학년 1반 7번</td>
+                    <td style="font-weight: 600">텀블러왕</td>
+                    <td class="m">88</td>
+                    <td class="m">26</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <figcaption>
+            <b>관리자 대시보드</b>
+            <span
+              >운영자에게는 계정이 없습니다. 초대코드와 관리자 코드로 들어오고,
+              모든 관리자 함수가 매 요청마다 코드를 다시 검증합니다.</span
+            >
+            <code>/admin/GREEN2026</code>
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="note">
+        <b>이 미리보기에 대해</b>
+        정적 화면입니다. 실제 앱은 Next.js와 Supabase 위에서 돌아가고, 여기
+        보이는 숫자는 설명을 위해 채워 넣은 예시입니다. 실제 데이터·인증·집계는
+        저장소의 코드가 담당합니다.
+      </div>
+
+      <div class="note" style="border-color: var(--blue)">
+        <b>비밀번호가 없다는 것의 의미</b>
+        참가에 필요한 비밀은 초대코드 하나뿐입니다. 그래서 초대코드를 아는
+        사람은 같은 반 친구의 번호를 골라 그 기록에 들어갈 수 있습니다.
+        &ldquo;비밀번호 없이&rdquo;를 택하면 피할 수 없는 결과이고, 초대코드를
+        캠페인 밖으로 흘리지 않는 것이 유일한 방어선입니다.
+      </div>
+
+      <footer>
+        그린스텝 · 친환경 행동 실천 챌린지<br />
+        저장소
+        <a href="https://github.com/rlawncks2627-dotcom/Challenge"
+          >github.com/rlawncks2627-dotcom/Challenge</a
+        >
+        · 설계 판단은 <code>docs/plan.md</code> 에 정리돼 있습니다.
+      </footer>
+    </div>
+  </body>
+</html>
