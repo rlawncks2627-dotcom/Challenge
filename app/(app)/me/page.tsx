@@ -1,4 +1,5 @@
 import { CheckinCalendar } from "@/components/checkin-calendar";
+import { signOut } from "@/lib/actions/auth";
 import { describeCo2, formatCo2 } from "@/lib/co2";
 import { campaignToday } from "@/lib/date";
 import { formatPeriod } from "@/lib/format";
@@ -13,7 +14,8 @@ export default async function MePage() {
   const today = campaignToday();
   const supabase = await createClient();
 
-  const [{ data: checkins }, { data: standing }] = await Promise.all([
+  const [{ data: auth }, { data: checkins }, { data: standing }] = await Promise.all([
+    supabase.auth.getUser(),
     supabase
       .from("checkins")
       .select("checkin_date")
@@ -64,6 +66,20 @@ export default async function MePage() {
           today={today}
           countsByDate={countsByDate}
         />
+      </section>
+
+      <section className="flex flex-col gap-3 border-t-2 border-rule pt-6">
+        <p className="text-sm text-ink-soft">
+          로그인 계정: {auth.user?.email ?? "–"}
+        </p>
+        <form action={signOut}>
+          <button
+            type="submit"
+            className="w-full rounded-sm border-2 border-ink px-4 py-3.5 font-semibold"
+          >
+            로그아웃
+          </button>
+        </form>
       </section>
     </main>
   );

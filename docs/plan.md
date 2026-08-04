@@ -14,7 +14,7 @@
 |---|---|---|
 | 사용 맥락 | 학교/회사 캠페인 (기간 한정, 참가자 다수) | 참가자 식별과 집계가 핵심 |
 | 인증 방식 | 체크 완료 + 사진·메모는 **선택** | 마찰 최소화, 사진은 동기부여용 |
-| 계정 | 초대코드 + 닉네임 (Supabase 익명 로그인) | 진입 장벽 최소화 |
+| 계정 | 초대코드 + 이메일·비밀번호 + 닉네임 | 익명 로그인이 프로젝트에서 비활성이라 2026-08-05 전환 |
 | 동기부여 | 전체 리더보드 + 공동 CO2 게이지 | 경쟁과 협력을 동시에 |
 | 스택 | Next.js 15 (App Router) + Supabase | Supabase MCP 연결됨, Vercel 무료 배포 |
 | 관리자 | 기본 관리자 페이지 (캠페인/항목 CRUD + 현황) | 실제 운영 가능한 최소 단위 |
@@ -87,13 +87,13 @@ checkins (
 
 ## RLS 정책
 
-익명 로그인이라 RLS가 유일한 방어선이다. 모든 테이블 RLS 활성화.
+클라이언트가 DB를 직접 읽고 쓰므로 RLS가 유일한 방어선이다. 모든 테이블 RLS 활성화.
 
 - 현재 사용자의 참가 캠페인을 구하는 헬퍼 함수 `my_campaign_ids()` (SECURITY DEFINER, `participants`에서 `auth.uid()` 조회) — 정책 안에서 `participants`를 직접 조회하면 재귀가 난다.
 - `campaigns` / `challenges` / `participants` / `checkins` SELECT: `campaign_id in (select my_campaign_ids())`
 - `checkins` INSERT/UPDATE/DELETE: 해당 `participant_id`가 본인 것일 때만
-- `participants` INSERT: 서버 액션(service role)에서만 — 초대코드 검증 후
-- `campaigns` / `challenges` 쓰기: service role 전용 (관리자 서버 액션 경유)
+- `participants` INSERT: 정책 없음. 참가는 `join_campaign` RPC(SECURITY DEFINER)로만 가능하고 그 안에서 초대코드를 검증한다. service role 키를 앱에 두지 않기 위한 선택.
+- `campaigns` / `challenges` 쓰기: 정책 없음 (관리자 RPC 경유 — Phase 6)
 - Storage `checkin-photos`: 경로 `{campaign_id}/{participant_id}/{uuid}.webp`, 본인 폴더에만 업로드, 같은 캠페인 참가자는 읽기 가능
 
 ## 화면 / 파일 구조
@@ -101,7 +101,10 @@ checkins (
 ```
 app/
   page.tsx                      참가 화면 — 초대코드 입력
-  join/[code]/page.tsx          닉네임 설정 + 익명 로그인 + 참가자 생성
+  join/[code]/page.tsx          캠페인 확인 + 가입(이메일·비번·닉네임) 또는 참가
+  login/page.tsx                기존 참가자 로그인
+  verify-email/page.tsx         이메일 확인 안내
+  auth/confirm/route.ts         확인 링크 콜백 — 참가 마무리
   (app)/layout.tsx              하단 탭 네비게이션 + 캠페인 컨텍스트
   (app)/today/page.tsx          홈: 오늘의 챌린지 카드 목록
   (app)/feed/page.tsx           인증 피드 (사진 있는 체크인만, 최신순 무한스크롤)
@@ -156,7 +159,9 @@ Next.js 15 + TypeScript + Tailwind 프로젝트 생성, Supabase 프로젝트 �
 마이그레이션으로 테이블 4개 + 뷰 2개 + 인덱스 + RLS 정책 + Storage 버킷 생성. 시드 캠페인 1개와 챌린지 8개 삽입. 확인: `list_tables`로 구조 검증, 익명 키로 남의 캠페인 데이터가 안 보이는지 직접 쿼리로 확인.
 
 **Phase 3 — 참가 플로우**
-초대코드 입력 → 서버 액션이 코드 검증 → 익명 로그인 → 참가자 생성 → `/today` 이동. 닉네임 중복과 잘못된 코드 처리 포함. 확인: 새 시크릿 창에서 코드로 진입해 참가자 레코드가 생긴다.
+초대코드 입력 → 캠페인 확인 → 이메일·비밀번호·닉네임 → 가입 → 참가자 생성 → `/today` 이동. 닉네임 중복과 잘못된 코드 처리 포함. 확인: 코드로 진입해 참가자 레코드가 생긴다.
+
+이 프로젝트는 이메일 확인이 필수(`mailer_autoconfirm: false`)라 가입 직후에는 세션이 없다. 가입 시 초대코드와 닉네임을 계정 메타데이터에 실어두고, 확인 링크가 `/auth/confirm` 으로 돌아왔을 때 참가를 마무리한다. 확인이 불필요한 설정으로 바꾸면 가입 즉시 참가되는 경로로 자동 전환된다 — 코드가 양쪽을 모두 다룬다.
 
 **Phase 4 — 체크인 (핵심 루프)**
 오늘의 챌린지 목록, 탭으로 체크/해제, 사진·메모 시트, 이미지 리사이즈 후 업로드. 유니크 제약 위반은 "이미 완료" UI로 처리. 확인: 체크 → 새로고침 후에도 유지, 같은 항목 재체크 불가.
@@ -174,13 +179,14 @@ Next.js 15 + TypeScript + Tailwind 프로젝트 생성, Supabase 프로젝트 �
 
 - **단위 테스트 (Vitest)**: `lib/co2.ts` 환산, 포인트 스냅샷 계산, 날짜 경계(로컬 자정) 처리
 - **E2E (Playwright) 1개**: 초대코드 진입 → 닉네임 설정 → 항목 2개 체크 → 리더보드에 내 닉네임과 점수 노출 → 게이지 증가
-- **RLS 검증**: 서로 다른 캠페인 참가자 2명을 만들어, A의 익명 세션으로 B의 캠페인 체크인을 조회·수정 시도 → 모두 차단되는지 확인. 이건 자동화 테스트로 남긴다.
+- **RLS 검증**: 서로 다른 캠페인 참가자 2명을 만들어, A의 세션으로 B의 캠페인 체크인을 조회·수정 시도 → 모두 차단되는지 확인. 이건 자동화 테스트로 남긴다.
 - **수동 확인**: 모바일 뷰포트(375px)에서 체크인 → 사진 업로드 → 대시보드까지 실제 Supabase 프로젝트로 한 바퀴
 
-## 실행 전 확인 필요
+## 운영 전 확인 필요
 
-- Supabase 프로젝트: 기존 것을 쓸지 새로 만들지 (MCP로 `list_projects` 확인 후 결정)
-- 익명 로그인이 해당 프로젝트에서 활성화돼 있어야 함 (대시보드 설정)
+- **이메일 발송량**: Supabase 기본 SMTP 는 시간당 소수의 메일만 보낸다. 참가자가 몰리는 캠페인 첫날에 확인 메일이 막힐 수 있으므로 커스텀 SMTP 를 연결하거나, 이메일 확인을 끄고 초대코드를 신뢰하는 쪽을 택한다.
+- **리다이렉트 허용 목록**: 배포 도메인을 Authentication → URL Configuration 에 등록해야 확인 링크가 돌아온다.
+- **`NEXT_PUBLIC_SITE_URL`**: 배포 환경에 설정 (없으면 요청 헤더로 유추)
 
 ## 산출물 저장
 

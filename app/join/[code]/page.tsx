@@ -16,10 +16,12 @@ export default async function JoinPage({ params }: PageProps<"/join/[code]">) {
   if (participant) redirect("/today");
 
   const supabase = await createClient();
-  const { data } = await supabase.rpc("campaign_preview", {
-    p_invite_code: code,
-  });
+  const [{ data }, { data: auth }] = await Promise.all([
+    supabase.rpc("campaign_preview", { p_invite_code: code }),
+    supabase.auth.getUser(),
+  ]);
   const campaign = data?.[0];
+  const signedIn = Boolean(auth.user);
 
   if (!campaign) {
     return (
@@ -71,11 +73,18 @@ export default async function JoinPage({ params }: PageProps<"/join/[code]">) {
         </p>
       </section>
 
-      <JoinForm code={code} />
+      <JoinForm code={code} signedIn={signedIn} />
 
-      <Link href="/" className="text-sm text-ink-soft underline">
-        다른 코드로 참가하기
-      </Link>
+      <div className="flex flex-col gap-2 text-sm text-ink-soft">
+        <Link href="/" className="underline underline-offset-4">
+          다른 코드로 참가하기
+        </Link>
+        {!signedIn && (
+          <Link href="/login" className="underline underline-offset-4">
+            이미 계정이 있다면 로그인
+          </Link>
+        )}
+      </div>
     </main>
   );
 }

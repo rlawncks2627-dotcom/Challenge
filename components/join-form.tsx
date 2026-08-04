@@ -4,23 +4,78 @@ import { useActionState } from "react";
 
 import { FieldError } from "@/components/field-error";
 import { SubmitButton } from "@/components/submit-button";
-import { joinCampaign, type JoinFormState } from "@/lib/actions/join";
+import {
+  joinWithSession,
+  signUpAndJoin,
+  type JoinFormState,
+} from "@/lib/actions/join";
 
-export function JoinForm({ code }: { code: string }) {
+const INPUT =
+  "w-full rounded-sm border-2 border-rule bg-paper-sunk px-4 py-3.5 text-ink placeholder:text-ink-soft placeholder:opacity-45 focus:border-green focus:outline-none";
+const LABEL = "text-sm font-semibold tracking-wide text-ink-soft";
+
+export function JoinForm({
+  code,
+  signedIn,
+}: {
+  code: string;
+  signedIn: boolean;
+}) {
   const [state, formAction] = useActionState<JoinFormState, FormData>(
-    joinCampaign,
+    signedIn ? joinWithSession : signUpAndJoin,
     null,
   );
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction} className="flex flex-col gap-5">
       <input type="hidden" name="code" value={code} />
 
+      {!signedIn && (
+        <>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="email" className={LABEL}>
+              이메일
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              placeholder="you@school.ac.kr"
+              aria-invalid={state?.field === "email" || undefined}
+              className={INPUT}
+            />
+            {state?.field === "email" && <FieldError message={state.message} />}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="password" className={LABEL}>
+              비밀번호
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              minLength={8}
+              autoComplete="new-password"
+              aria-invalid={state?.field === "password" || undefined}
+              aria-describedby="password-help"
+              className={INPUT}
+            />
+            <p id="password-help" className="text-sm text-ink-soft">
+              8자 이상으로 정해주세요.
+            </p>
+            {state?.field === "password" && (
+              <FieldError message={state.message} />
+            )}
+          </div>
+        </>
+      )}
+
       <div className="flex flex-col gap-2">
-        <label
-          htmlFor="nickname"
-          className="text-sm font-semibold tracking-wide text-ink-soft"
-        >
+        <label htmlFor="nickname" className={LABEL}>
           닉네임
         </label>
         <input
@@ -32,25 +87,20 @@ export function JoinForm({ code }: { code: string }) {
           autoComplete="off"
           placeholder="순위표에 표시될 이름"
           aria-invalid={state?.field === "nickname" || undefined}
-          aria-describedby={
-            state?.field === "nickname" ? "nickname-error" : "nickname-help"
-          }
-          className="w-full rounded-sm border-2 border-rule bg-paper-sunk px-4 py-4 text-lg text-ink placeholder:text-ink-soft placeholder:opacity-45 focus:border-green focus:outline-none"
+          aria-describedby="nickname-help"
+          className={INPUT}
         />
         <p id="nickname-help" className="text-sm text-ink-soft">
-          같은 캠페인 참가자들에게 보입니다. 20자까지 쓸 수 있어요.
+          같은 캠페인 참가자들에게 보입니다. 이메일은 공개되지 않아요.
         </p>
+        {state?.field === "nickname" && <FieldError message={state.message} />}
       </div>
-
-      {state?.field === "nickname" && (
-        <div id="nickname-error">
-          <FieldError message={state.message} />
-        </div>
-      )}
 
       {state?.field === "code" && <FieldError message={state.message} />}
 
-      <SubmitButton pendingLabel="참가하는 중">캠페인 참가</SubmitButton>
+      <SubmitButton pendingLabel="참가하는 중">
+        {signedIn ? "캠페인 참가" : "가입하고 참가"}
+      </SubmitButton>
     </form>
   );
 }

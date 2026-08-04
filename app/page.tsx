@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { InviteCodeForm } from "@/components/invite-code-form";
@@ -32,6 +33,12 @@ export default async function Home() {
         <InviteCodeForm />
         <p className="text-sm text-ink-soft">
           초대코드는 캠페인 운영자에게 받으세요.
+        </p>
+        <p className="text-sm text-ink-soft">
+          이미 참가했다면{" "}
+          <Link href="/login" className="underline underline-offset-4">
+            로그인
+          </Link>
         </p>
       </div>
     </main>
