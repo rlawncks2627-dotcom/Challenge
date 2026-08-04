@@ -3,12 +3,9 @@
 import { useActionState } from "react";
 
 import { FieldError } from "@/components/field-error";
+import { INPUT, LABEL } from "@/components/form-styles";
 import { SubmitButton } from "@/components/submit-button";
 import { signIn, type LoginFormState } from "@/lib/actions/auth";
-
-const INPUT =
-  "w-full rounded-sm border-2 border-rule bg-paper-sunk px-4 py-3.5 text-ink placeholder:text-ink-soft placeholder:opacity-45 focus:border-green focus:outline-none";
-const LABEL = "text-sm font-semibold tracking-wide text-ink-soft";
 
 export function LoginForm() {
   const [state, formAction] = useActionState<LoginFormState, FormData>(

@@ -257,6 +257,91 @@ export type Database = {
       }
     }
     Functions: {
+      admin_campaign_overview: {
+        Args: { p_invite_code: string; p_admin_code: string }
+        Returns: {
+          id: string
+          name: string
+          invite_code: string
+          start_date: string
+          end_date: string
+          goal_co2_g: number
+          participant_count: number
+          checkin_count: number
+          total_co2_g: number
+        }[]
+      }
+      admin_create_campaign: {
+        Args: {
+          p_bootstrap_code: string
+          p_name: string
+          p_invite_code: string
+          p_admin_code: string
+          p_start_date: string
+          p_end_date: string
+          p_goal_co2_g: number
+        }
+        Returns: string
+      }
+      admin_delete_challenge: {
+        Args: {
+          p_invite_code: string
+          p_admin_code: string
+          p_challenge_id: string
+        }
+        Returns: undefined
+      }
+      admin_list_challenges: {
+        Args: { p_invite_code: string; p_admin_code: string }
+        Returns: {
+          id: string
+          title: string
+          description: string | null
+          icon: string
+          points: number
+          co2_saved_g: number
+          sort_order: number
+          is_active: boolean
+          checkin_count: number
+        }[]
+      }
+      admin_list_participants: {
+        Args: { p_invite_code: string; p_admin_code: string }
+        Returns: {
+          nickname: string
+          joined_at: string
+          checkin_count: number
+          total_points: number
+          total_co2_g: number
+        }[]
+      }
+      admin_save_challenge: {
+        Args: {
+          p_invite_code: string
+          p_admin_code: string
+          p_challenge_id: string | null
+          p_title: string
+          p_description: string | null
+          p_icon: string
+          p_points: number
+          p_co2_saved_g: number
+          p_sort_order: number
+          p_is_active: boolean
+        }
+        Returns: string
+      }
+      admin_update_campaign: {
+        Args: {
+          p_invite_code: string
+          p_admin_code: string
+          p_name: string
+          p_start_date: string
+          p_end_date: string
+          p_goal_co2_g: number
+          p_new_admin_code?: string | null
+        }
+        Returns: undefined
+      }
       campaign_preview: {
         Args: { p_invite_code: string }
         Returns: {
