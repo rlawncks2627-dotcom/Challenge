@@ -257,6 +257,19 @@ export type Database = {
       }
     }
     Functions: {
+      campaign_preview: {
+        Args: { p_invite_code: string }
+        Returns: {
+          name: string
+          start_date: string
+          end_date: string
+          participant_count: number
+        }[]
+      }
+      join_campaign: {
+        Args: { p_invite_code: string; p_nickname: string }
+        Returns: string
+      }
       my_campaign_ids: { Args: never; Returns: string[] }
       my_participant_ids: { Args: never; Returns: string[] }
     }

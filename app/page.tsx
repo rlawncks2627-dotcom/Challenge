@@ -1,46 +1,39 @@
-import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
-/**
- * Phase 1 확인용 임시 화면. Phase 3 에서 초대코드 입력 화면으로 대체된다.
- * Supabase 에 실제로 요청이 닿는지까지 확인한다.
- */
-async function checkSupabase(): Promise<{ ok: boolean; detail: string }> {
-  try {
-    const supabase = await createClient();
-    // 세션이 없는 게 정상이다. 요청이 왕복했다는 사실 자체가 확인 대상.
-    const { error } = await supabase.auth.getClaims();
-    if (error) return { ok: false, detail: error.message };
-    return { ok: true, detail: "인증 엔드포인트 응답 정상" };
-  } catch (e) {
-    return { ok: false, detail: e instanceof Error ? e.message : String(e) };
-  }
-}
+import { InviteCodeForm } from "@/components/invite-code-form";
+import { Wordmark } from "@/components/wordmark";
+import { getCurrentParticipant } from "@/lib/participant";
 
 export default async function Home() {
-  const status = await checkSupabase();
+  // 이미 참가한 브라우저를 초대코드 화면에 다시 세워둘 이유가 없다.
+  const participant = await getCurrentParticipant();
+  if (participant) redirect("/today");
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-6 p-6">
-      <div>
-        <h1 className="text-2xl font-bold">🌱 그린스텝</h1>
-        <p className="mt-1 text-sm text-black/60 dark:text-white/60">
-          친환경 행동 실천 챌린지 · Phase 1 설정 확인
+    <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-10 px-6 py-12">
+      <header className="flex flex-col gap-6">
+        <Wordmark className="text-3xl" />
+
+        {/* 이 앱이 무엇인지 한 문장으로 설명하는 자리.
+            추상적인 구호 대신 실제 데이터에 있는 숫자를 쓴다. */}
+        <p className="text-xl leading-relaxed font-medium">
+          오늘 텀블러 한 번이{" "}
+          <span className="font-display text-2xl text-green">25g</span>
+          입니다.
+          <br />
+          <span className="text-ink-soft">
+            혼자서는 그램이지만, 다 같이 모으면 킬로그램이 됩니다.
+          </span>
+        </p>
+      </header>
+
+      <div className="flex flex-col gap-4">
+        <div className="h-px w-full bg-rule" />
+        <InviteCodeForm />
+        <p className="text-sm text-ink-soft">
+          초대코드는 캠페인 운영자에게 받으세요.
         </p>
       </div>
-
-      <div className="rounded-xl border border-black/10 p-4 dark:border-white/15">
-        <div className="flex items-center gap-2 font-medium">
-          <span>{status.ok ? "✅" : "❌"}</span>
-          <span>Supabase 연결 {status.ok ? "성공" : "실패"}</span>
-        </div>
-        <p className="mt-2 text-sm text-black/60 dark:text-white/60">
-          {status.detail}
-        </p>
-      </div>
-
-      <p className="text-sm text-black/50 dark:text-white/50">
-        다음 단계: Phase 2 — 테이블·뷰·RLS 정책 마이그레이션
-      </p>
     </main>
   );
 }

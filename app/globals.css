@@ -1,26 +1,104 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * 그린스텝 — 리소그래프 인쇄물의 어휘.
+ * 캠페인 포스터는 실제로 리소로 찍힌다. 잉크는 4색뿐이고, 그라데이션이 없고,
+ * 판이 살짝 어긋나며 겹친 곳에서 제3의 색이 난다. 그 규칙을 그대로 따른다.
+ */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  --paper: #edefe6; /* 재생지 */
+  --paper-sunk: #e3e7d9; /* 눌린 면 */
+  --ink: #16241b; /* 먹 */
+  --ink-soft: #16241b8c;
+  --green: #00a95c; /* Riso Green */
+  --pink: #ff48b0; /* Riso Fluorescent Pink — 딱 한 곳에만 */
+  --blue: #3d5588; /* Riso Federal Blue */
+  --rule: #16241b2e;
+  --overprint: multiply;
+  --grain: 0.5;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #131611;
+    --paper-sunk: #1c211a;
+    --ink: #edefe6;
+    --ink-soft: #edefe68c;
+    --green: #2ad07f;
+    --pink: #ff6ec0;
+    --blue: #93a9dd;
+    --rule: #edefe62e;
+    --overprint: screen; /* 어두운 종이 위에서는 잉크가 겹칠수록 밝아진다 */
+    --grain: 0.22;
   }
 }
 
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-sunk: var(--paper-sunk);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-green: var(--green);
+  --color-pink: var(--pink);
+  --color-blue: var(--blue);
+  --color-rule: var(--rule);
+
+  --font-display: var(--font-gasoek), sans-serif;
+  --font-sans: var(--font-plex-kr), sans-serif;
+  --font-mono: var(--font-plex-mono), monospace;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans), sans-serif;
+  /* 한국어는 어절 단위로 끊어야 읽힌다. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* 종이 결. 화면 전체에 고정으로 한 겹 덮는다. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: var(--grain);
+  mix-blend-mode: var(--overprint);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+}
+
+/* 오버프린트: 판이 어긋나 두 잉크가 겹치는 자리. 이 앱의 서명이다. */
+.overprint {
+  position: relative;
+  display: inline-block;
+  color: var(--green);
+}
+
+.overprint::before {
+  content: attr(data-text);
+  position: absolute;
+  left: 0.055em;
+  top: 0.045em;
+  color: var(--pink);
+  mix-blend-mode: var(--overprint);
+  pointer-events: none;
+}
+
+/* 키보드 초점은 항상 보여야 한다. */
+:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
