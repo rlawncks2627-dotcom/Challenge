@@ -35,6 +35,9 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
+  // 대부분 휴대폰에서 열린다. 기본값에 기대지 않고 명시한다.
+  width: "device-width",
+  initialScale: 1,
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#edefe6" },
     { media: "(prefers-color-scheme: dark)", color: "#131611" },

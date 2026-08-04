@@ -58,6 +58,13 @@ export default async function MePage() {
         </div>
       </section>
 
+      {countsByDate.size === 0 && (
+        <p className="rounded-sm border-2 border-dashed border-rule px-4 py-6 text-ink-soft">
+          아직 기록이 없어요. 오늘 화면에서 실천한 항목을 눌러 첫 도장을
+          찍어보세요.
+        </p>
+      )}
+
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-bold">실천 달력</h2>
         <CheckinCalendar
