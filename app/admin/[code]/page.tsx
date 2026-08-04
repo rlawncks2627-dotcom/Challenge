@@ -7,6 +7,7 @@ import { adminSignOut } from "@/lib/actions/admin";
 import { readAdminSession } from "@/lib/admin-session";
 import { formatCo2 } from "@/lib/co2";
 import { normalizeCode } from "@/lib/invite-code";
+import { formatSlot } from "@/lib/roster";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminDashboard({
@@ -114,6 +115,7 @@ export default async function AdminDashboard({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b-2 border-rule text-left text-ink-soft">
+                  <th className="py-2 pr-3 font-semibold">자리</th>
                   <th className="py-2 pr-3 font-semibold">닉네임</th>
                   <th className="py-2 pr-3 font-semibold">점수</th>
                   <th className="py-2 pr-3 font-semibold">실천</th>
@@ -124,6 +126,9 @@ export default async function AdminDashboard({
               <tbody>
                 {participants?.map((p) => (
                   <tr key={p.nickname} className="border-b border-rule">
+                    <td className="py-2 pr-3 font-mono whitespace-nowrap">
+                      {formatSlot(p.grade, p.class_no, p.student_no)}
+                    </td>
                     <td className="py-2 pr-3 font-semibold">{p.nickname}</td>
                     <td className="py-2 pr-3 font-mono">{p.total_points}</td>
                     <td className="py-2 pr-3 font-mono">{p.checkin_count}</td>

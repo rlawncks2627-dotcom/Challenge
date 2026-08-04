@@ -4,18 +4,18 @@ import { describeCo2, formatCo2 } from "@/lib/co2";
 import { campaignToday } from "@/lib/date";
 import { formatPeriod } from "@/lib/format";
 import { getCurrentParticipant } from "@/lib/participant";
+import { formatSlot } from "@/lib/roster";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function MePage() {
   const participant = await getCurrentParticipant();
   if (!participant) return null;
 
-  const { campaign, nickname, participantId } = participant;
+  const { campaign, nickname, participantId, slot } = participant;
   const today = campaignToday();
   const supabase = await createClient();
 
-  const [{ data: auth }, { data: checkins }, { data: standing }] = await Promise.all([
-    supabase.auth.getUser(),
+  const [{ data: checkins }, { data: standing }] = await Promise.all([
     supabase
       .from("checkins")
       .select("checkin_date")
@@ -39,7 +39,11 @@ export default async function MePage() {
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold">{nickname}님의 기록</h1>
         <p className="text-sm text-ink-soft">
-          {campaign.name} · {formatPeriod(campaign.startDate, campaign.endDate)}
+          {formatSlot(slot.grade, slot.classNo, slot.studentNo)} ·{" "}
+          {campaign.name}
+        </p>
+        <p className="text-sm text-ink-soft">
+          {formatPeriod(campaign.startDate, campaign.endDate)}
         </p>
       </header>
 
@@ -77,14 +81,16 @@ export default async function MePage() {
 
       <section className="flex flex-col gap-3 border-t-2 border-rule pt-6">
         <p className="text-sm text-ink-soft">
-          로그인 계정: {auth.user?.email ?? "–"}
+          이 기기에서 나가도 기록은 남습니다. 다시 들어올 때 초대코드와{" "}
+          {formatSlot(slot.grade, slot.classNo, slot.studentNo)}를 고르면
+          이어집니다.
         </p>
         <form action={signOut}>
           <button
             type="submit"
             className="w-full rounded-sm border-2 border-ink px-4 py-3.5 font-semibold"
           >
-            로그아웃
+            이 기기에서 나가기
           </button>
         </form>
       </section>

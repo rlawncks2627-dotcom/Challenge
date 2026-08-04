@@ -167,23 +167,32 @@ export type Database = {
         Row: {
           auth_user_id: string
           campaign_id: string
+          class_no: number | null
           created_at: string
+          grade: number | null
           id: string
           nickname: string
+          student_no: number | null
         }
         Insert: {
           auth_user_id: string
           campaign_id: string
+          class_no?: number | null
           created_at?: string
+          grade?: number | null
           id?: string
           nickname: string
+          student_no?: number | null
         }
         Update: {
           auth_user_id?: string
           campaign_id?: string
+          class_no?: number | null
           created_at?: string
+          grade?: number | null
           id?: string
           nickname?: string
+          student_no?: number | null
         }
         Relationships: [
           {
@@ -309,6 +318,9 @@ export type Database = {
         Args: { p_invite_code: string; p_admin_code: string }
         Returns: {
           nickname: string
+          grade: number | null
+          class_no: number | null
+          student_no: number | null
           joined_at: string
           checkin_count: number
           total_points: number
@@ -351,9 +363,15 @@ export type Database = {
           participant_count: number
         }[]
       }
-      join_campaign: {
-        Args: { p_invite_code: string; p_nickname: string }
-        Returns: string
+      roster_sign_in: {
+        Args: {
+          p_invite_code: string
+          p_grade: number
+          p_class_no: number
+          p_student_no: number
+          p_nickname: string
+        }
+        Returns: { login_email: string; login_password: string }[]
       }
       my_campaign_ids: { Args: never; Returns: string[] }
       my_participant_ids: { Args: never; Returns: string[] }

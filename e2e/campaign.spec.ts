@@ -3,19 +3,23 @@ import { expect, test, type Page } from "@playwright/test";
 /**
  * 참가자 흐름 E2E.
  *
- * 계정은 마이그레이션과 별개로 미리 만들어 둔다(README 의 검증 절차 참고).
- * 이메일 확인이 필수인 프로젝트라 가입은 메일 왕복이 필요해서, 여기서는
- * 확인이 끝난 계정으로 로그인해 그 뒤를 검증한다.
+ * 사전 준비가 필요 없다. 초대코드와 자리만 있으면 참가되고, 같은 자리를
+ * 다시 고르면 그 기록으로 이어진다 — 그래서 몇 번을 돌려도 같은 참가자다.
  */
-const EMAIL = process.env.E2E_EMAIL ?? "verify-e2e@greenstep.test";
-const PASSWORD = process.env.E2E_PASSWORD ?? "verify-pass-1234";
+const CODE = process.env.E2E_CODE ?? "GREEN2026";
+const SLOT = { grade: "3", classNo: "2", studentNo: "15" };
+const NICKNAME = "E2E검증";
 
 async function login(page: Page) {
-  await page.goto("/login");
-  await page.getByLabel("이메일").fill(EMAIL);
-  await page.getByLabel("비밀번호").fill(PASSWORD);
-  await page.getByRole("button", { name: "로그인" }).click();
+  await page.goto(`/join/${CODE}`);
+  await page.selectOption("#grade", SLOT.grade);
+  await page.selectOption("#class_no", SLOT.classNo);
+  await page.selectOption("#student_no", SLOT.studentNo);
+  await page.getByLabel("닉네임").fill(NICKNAME);
+  await page.getByRole("button", { name: "캠페인 참가" }).click();
   await page.waitForURL("**/today");
+  // 목록이 그려지기 전에 도장 수를 세면 0 이 나온다.
+  await expect(page.locator('button[aria-pressed]').first()).toBeVisible();
 }
 
 /** 아직 도장이 찍히지 않은 첫 항목의 카드. */
@@ -45,8 +49,22 @@ test.describe("참가자 흐름", () => {
 
     await page.goto("/me");
     await expect(page.getByText("실천 달력")).toBeVisible();
+    // 자리가 화면에 남아 있어야 다음에 어느 번호로 들어올지 알 수 있다.
+    await expect(page.getByText("3학년 2반 15번").first()).toBeVisible();
 
     expect(title.length).toBeGreaterThan(0);
+  });
+
+  test("같은 자리를 다시 고르면 기존 기록으로 이어진다", async ({ page }) => {
+    await login(page);
+    const before = await page.locator('[data-stamped="true"]').count();
+
+    // 세션을 버리고 처음부터 다시 참가한다.
+    await page.context().clearCookies();
+    await login(page);
+
+    await expect(page.getByText(NICKNAME)).toBeVisible();
+    await expect(page.locator('[data-stamped="true"]')).toHaveCount(before);
   });
 
   test("사진을 붙이면 브라우저에서 1200px 로 줄여 올린다", async ({ page }) => {

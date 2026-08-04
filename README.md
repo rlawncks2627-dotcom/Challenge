@@ -2,7 +2,13 @@
 
 학교·회사가 기간을 정해 여는 친환경 실천 캠페인 웹앱.
 
-참가자는 초대코드로 들어와 매일 실천 항목을 탭 한 번으로 체크하고, 전체 리더보드와 공동 CO2 절감 게이지에서 자기 기록이 반영되는 걸 본다. 운영자는 캠페인·항목·현황을 웹에서 관리한다.
+참가자는 초대코드를 넣고 학년·반·번호를 고르면 바로 참가한다. 가입도 비밀번호도 없다. 매일 실천 항목을 탭 한 번으로 체크하고, 전체 리더보드와 공동 CO2 절감 게이지에서 자기 기록이 반영되는 걸 본다. 운영자는 캠페인·항목·현황을 웹에서 관리한다.
+
+## 참가자는 어떻게 식별되나
+
+참가자에게는 계정이 없지만, RLS 가 이 앱의 유일한 보안 경계이고 그 경계는 `auth.uid()` 위에 서 있다. 그래서 **학년·반·번호로 결정되는 내부 계정을 서버가 대신 만들고 로그인시킨다**(`roster_sign_in` RPC). 참가자는 그 계정의 존재를 모르고, 비밀번호는 호출할 때마다 새로 만들어져 서버 액션 안에서만 쓰이며 브라우저로 내려가지 않는다. 내부 계정 주소는 예약 TLD(`.invalid`)를 쓰므로 실제 사용자 계정과 겹칠 수 없다.
+
+**받아들인 약점**: 비밀번호가 없으므로 초대코드를 아는 사람은 같은 반 친구의 번호를 골라 그 기록에 들어갈 수 있다. "비밀번호 없이"를 택하면 피할 수 없는 결과다. 초대코드를 캠페인 밖으로 흘리지 않는 것이 유일한 방어선이다.
 
 - 기획과 설계 판단: [`docs/plan.md`](docs/plan.md)
 - 스택: Next.js 16 (App Router) · TypeScript · Tailwind v4 · Supabase
@@ -12,8 +18,7 @@
 | 경로 | 용도 |
 |---|---|
 | `/` | 초대코드 입력 |
-| `/join/[code]` | 캠페인 확인 → 가입(이메일·비밀번호·닉네임) 또는 참가 |
-| `/login` | 기존 참가자 로그인 |
+| `/join/[code]` | 캠페인 확인 → 학년·반·번호 선택 + 닉네임 → 참가 |
 | `/today` | 오늘의 실천 목록 · 체크 · 사진 인증 |
 | `/feed` | 인증샷 피드 |
 | `/board` | 공동 CO2 게이지 · 리더보드 |
@@ -46,35 +51,7 @@ NEXT_PUBLIC_SITE_URL=https://<배포 도메인>
 | `npm run test:e2e` | 브라우저 E2E (Playwright, `e2e/*.spec.ts`) |
 | `npm run lint` | ESLint |
 
-E2E 는 확인이 끝난 계정으로 로그인해서 그 뒤를 검증한다. 처음 돌리기 전에 계정과 참가자를 한 번 만들어 둔다:
-
-```sql
-insert into auth.users (
-  id, instance_id, aud, role, email, encrypted_password,
-  email_confirmed_at, created_at, updated_at,
-  raw_app_meta_data, raw_user_meta_data,
-  confirmation_token, recovery_token, email_change_token_new, email_change
-) values (
-  gen_random_uuid(), '00000000-0000-0000-0000-000000000000',
-  'authenticated', 'authenticated', 'verify-e2e@greenstep.test',
-  extensions.crypt('verify-pass-1234', extensions.gen_salt('bf')),
-  now(), now(), now(),
-  '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb, '', '', '', ''
-);
-
-insert into auth.identities (id, user_id, provider_id, provider, identity_data, created_at, updated_at)
-select gen_random_uuid(), u.id, u.id::text, 'email',
-       jsonb_build_object('sub', u.id, 'email', u.email, 'email_verified', true),
-       now(), now()
-from auth.users u where u.email = 'verify-e2e@greenstep.test';
-
-insert into public.participants (campaign_id, auth_user_id, nickname)
-select c.id, u.id, 'E2E검증'
-from public.campaigns c, auth.users u
-where c.invite_code = 'GREEN2026' and u.email = 'verify-e2e@greenstep.test';
-```
-
-계정 정보는 `E2E_EMAIL` / `E2E_PASSWORD` 로 바꿀 수 있다. 이 계정은 개발용 프로젝트에만 두고 운영 DB 에는 만들지 않는다.
+E2E 는 사전 준비가 필요 없다. 시드 캠페인(`GREEN2026`)의 3학년 2반 15번 자리로 참가해서 그 뒤를 검증하고, 같은 자리를 다시 고르면 기록이 이어지므로 몇 번을 돌려도 참가자가 늘지 않는다. 다른 캠페인으로 돌리려면 `E2E_CODE` 를 바꾼다.
 
 ## 데이터베이스
 

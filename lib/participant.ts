@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 export type CurrentParticipant = {
   participantId: string;
   nickname: string;
+  slot: { grade: number | null; classNo: number | null; studentNo: number | null };
   campaign: {
     id: string;
     name: string;
@@ -29,7 +30,7 @@ export async function getCurrentParticipant(): Promise<CurrentParticipant | null
   const { data } = await supabase
     .from("participants")
     .select(
-      "id, nickname, campaign:campaigns!participants_campaign_id_fkey(id, name, start_date, end_date, goal_co2_g)",
+      "id, nickname, grade, class_no, student_no, campaign:campaigns!participants_campaign_id_fkey(id, name, start_date, end_date, goal_co2_g)",
     )
     .eq("auth_user_id", user.id)
     .order("created_at", { ascending: false })
@@ -41,6 +42,11 @@ export async function getCurrentParticipant(): Promise<CurrentParticipant | null
   return {
     participantId: data.id,
     nickname: data.nickname,
+    slot: {
+      grade: data.grade,
+      classNo: data.class_no,
+      studentNo: data.student_no,
+    },
     campaign: {
       id: data.campaign.id,
       name: data.campaign.name,
