@@ -87,6 +87,54 @@ body::after {
   pointer-events: none;
 }
 
+/*
+ * 도장. 캠페인 스탬프 카드에서 그대로 가져왔다.
+ * 손으로 찍은 도장은 반듯하지 않으므로 살짝 기울여 앉힌다.
+ */
+.stamp {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  border: 2px solid var(--rule);
+  border-radius: 9999px;
+  transition: border-color 0.15s ease;
+}
+
+.stamp[data-stamped="true"] {
+  position: relative;
+  border-color: var(--green);
+  color: var(--green);
+  transform: rotate(-9deg);
+  animation: stamp-press 0.22s ease-out;
+}
+
+/* 겹쳐 찍힌 두 번째 판. 워드마크의 오버프린트와 같은 규칙이다. */
+.stamp[data-stamped="true"]::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--pink);
+  border-radius: 9999px;
+  transform: translate(2px, 2px);
+  mix-blend-mode: var(--overprint);
+}
+
+@keyframes stamp-press {
+  0% {
+    transform: rotate(-9deg) scale(1.5);
+    opacity: 0;
+  }
+  60% {
+    transform: rotate(-9deg) scale(0.94);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(-9deg) scale(1);
+  }
+}
+
 /* 키보드 초점은 항상 보여야 한다. */
 :focus-visible {
   outline: 2px solid var(--green);
