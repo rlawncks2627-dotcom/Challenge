@@ -105,8 +105,12 @@ where c.invite_code = 'GREEN2026' and u.email = 'verify-e2e@greenstep.test';
 
 ## 배포 (Vercel)
 
-1. 저장소를 Vercel 에 연결
-2. 환경변수 3개(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_SITE_URL`) 등록
-3. 배포 후 그 도메인을 위 1번의 Supabase URL Configuration 에 추가
+1. [vercel.com/new](https://vercel.com/new) 에서 이 저장소를 가져온다. 빌드 설정은 기본값 그대로 둔다.
+2. 환경변수 2개를 등록한다.
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 
-빌드 설정은 기본값 그대로 두면 된다.
+   `NEXT_PUBLIC_SITE_URL` 은 없어도 된다. 없으면 요청 헤더(`x-forwarded-host` / `x-forwarded-proto`)에서 주소를 유추하는데, Vercel 은 두 헤더를 채워준다. 커스텀 도메인을 붙여 접속 경로가 여러 개가 되면 그때 명시한다.
+3. 배포가 끝나면 그 도메인을 Supabase → Authentication → URL Configuration 의 **Site URL** 과 **Redirect URLs** 에 추가한다. 이걸 빼면 이메일 확인 링크가 돌아오지 못한다.
+
+이후로는 `main` 에 push 할 때마다 자동 배포된다.
