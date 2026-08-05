@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>친환경 챌린지 — 캠페인 관리</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jua&family=Gothic+A1:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* 앱과 같은 토큰. 관리 화면은 표를 많이 보므로 여백을 조금 줄였다. */
+      :root {
+        --sky-top: #dcedf2;
+        --paper: #f3f8ef;
+        --sage: #a3c9a8;
+        --mint: #b8e0d2;
+        --ink: #35473c;
+        --ink-soft: #35473ca8;
+        --rule: #35473c26;
+        --green: #4e9268;
+        --blue: #6fa8ce;
+        --accent: #e2563d;
+        --berry: #b0577f;
+        --mark-fill: #2f6fd0;
+        --mark-outline: #a3c9a8;
+        --shadow: 0 2px 10px rgb(53 71 60 / 0.09);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --sky-top: #15272c;
+          --paper: #16221d;
+          --sage: #6f9c7a;
+          --mint: #7fb9a8;
+          --ink: #e7f0e8;
+          --ink-soft: #e7f0e8a8;
+          --rule: #e7f0e826;
+          --green: #7cc599;
+          --blue: #97c5e2;
+          --accent: #ff7b5e;
+          --berry: #e894b8;
+          --mark-fill: #7cb8ff;
+          --mark-outline: #274b39;
+          --shadow: 0 2px 10px rgb(0 0 0 / 0.35);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background:
+          linear-gradient(180deg, var(--sky-top) 0%, var(--paper) 38%) no-repeat,
+          var(--paper);
+        background-attachment: fixed;
+        color: var(--ink);
+        font-family: "Gothic A1", system-ui, sans-serif;
+        word-break: keep-all;
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .page {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 40px 20px 80px;
+      }
+
+      .wordmark {
+        display: inline-block;
+        font-family: "Jua", system-ui, sans-serif;
+        font-size: 1.5rem;
+        color: var(--mark-fill);
+        transform: rotate(-2deg);
+        text-shadow:
+          2px 0 0 var(--mark-outline), -2px 0 0 var(--mark-outline),
+          0 2px 0 var(--mark-outline), 0 -2px 0 var(--mark-outline),
+          2px 2px 0 var(--mark-outline), -2px 2px 0 var(--mark-outline),
+          2px -2px 0 var(--mark-outline), -2px -2px 0 var(--mark-outline);
+      }
+
+      h1 {
+        font-size: 1.6rem;
+        line-height: 1.3;
+      }
+      h2 {
+        font-size: 1.15rem;
+      }
+      h3 {
+        font-size: 0.95rem;
+      }
+      .soft {
+        color: var(--ink-soft);
+        font-size: 0.85rem;
+        line-height: 1.65;
+      }
+      .mono {
+        font-family: "IBM Plex Mono", monospace;
+      }
+
+      section {
+        margin-top: 34px;
+      }
+      .stack {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--ink-soft);
+        margin-bottom: 5px;
+      }
+
+      input,
+      select {
+        width: 100%;
+        border: 2px solid var(--rule);
+        background: color-mix(in srgb, var(--paper) 70%, transparent);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 11px 13px;
+        font-family: inherit;
+        font-size: 0.95rem;
+      }
+      input:focus {
+        outline: none;
+        border-color: var(--green);
+        background: var(--paper);
+      }
+      input[type="checkbox"] {
+        width: auto;
+        accent-color: var(--green);
+      }
+
+      button {
+        font-family: inherit;
+        font-weight: 700;
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 22px;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+        box-shadow: var(--shadow);
+      }
+      .btn-primary:disabled {
+        opacity: 0.55;
+        cursor: default;
+      }
+      .btn-ghost {
+        background: color-mix(in srgb, var(--paper) 60%, transparent);
+        color: var(--ink);
+        border: 2px solid color-mix(in srgb, var(--green) 50%, transparent);
+      }
+      .btn-link {
+        background: none;
+        padding: 0;
+        color: var(--berry);
+        text-decoration: underline;
+        text-underline-offset: 4px;
+        font-size: 0.85rem;
+      }
+
+      .card {
+        border: 2px solid var(--rule);
+        background: color-mix(in srgb, var(--paper) 60%, transparent);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: var(--shadow);
+      }
+
+      .code-badge {
+        border-left: 4px solid var(--green);
+        padding-left: 14px;
+      }
+      .code-badge .value {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 1.6rem;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+      }
+
+      .tiles {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .tile {
+        border: 2px solid var(--rule);
+        border-radius: 14px;
+        padding: 12px;
+        background: color-mix(in srgb, var(--paper) 60%, transparent);
+      }
+      .tile span {
+        font-size: 0.72rem;
+        color: var(--ink-soft);
+      }
+      .tile b {
+        display: block;
+        font-family: "Jua", system-ui, sans-serif;
+        font-weight: 400;
+        font-size: 1.3rem;
+        margin-top: 4px;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .challenge-head {
+        display: grid;
+        grid-template-columns: 74px 1fr;
+        gap: 10px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      th {
+        text-align: left;
+        color: var(--ink-soft);
+        font-weight: 700;
+        padding: 8px 8px 8px 0;
+        border-bottom: 2px solid var(--rule);
+        white-space: nowrap;
+      }
+      td {
+        padding: 9px 8px 9px 0;
+        border-bottom: 1px solid var(--rule);
+      }
+      .scroll {
+        overflow-x: auto;
+      }
+
+      .msg {
+        font-size: 0.85rem;
+        font-weight: 700;
+        min-height: 1.2em;
+      }
+      .msg.err {
+        color: var(--berry);
+      }
+      .msg.ok {
+        color: var(--green);
+      }
+
+      .notice {
+        border-left: 4px solid var(--blue);
+        padding-left: 14px;
+        font-size: 0.85rem;
+        line-height: 1.7;
+        color: var(--ink-soft);
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      @media (max-width: 620px) {
+        .tiles,
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="row" style="justify-content: space-between; margin-bottom: 24px">
+        <span class="wordmark">친환경 챌린지</span>
+        <button id="signOut" class="btn-link hidden" type="button">나가기</button>
+      </div>
+
+      <!-- 로그인 -->
+      <div id="loginView">
+        <h1>캠페인 관리</h1>
+        <p class="soft" style="margin-top: 6px">
+          운영자용 도구입니다. 초대코드와 관리자 코드를 아는 사람만 캠페인을
+          고칠 수 있습니다.
+        </p>
+
+        <div class="card stack" style="margin-top: 22px; max-width: 420px">
+          <div>
+            <label for="code">초대코드</label>
+            <input
+              id="code"
+              class="mono"
+              style="letter-spacing: 0.2em; text-transform: uppercase"
+              placeholder="GREEN2026"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+          <div>
+            <label for="admin">관리자 코드</label>
+            <input id="admin" type="password" autocomplete="off" />
+          </div>
+          <p id="loginMsg" class="msg err"></p>
+          <button id="signIn" class="btn-primary" type="button">
+            관리 화면 열기
+          </button>
+        </div>
+
+        <p class="notice" style="margin-top: 26px">
+          입력한 관리자 코드는 이 탭을 닫으면 사라집니다(sessionStorage). 공용
+          컴퓨터에서 쓰셨다면 작업이 끝난 뒤 <b>나가기</b>를 눌러주세요.
+        </p>
+      </div>
+
+      <!-- 관리 화면 -->
+      <div id="adminView" class="hidden">
+        <h1 id="campaignName">—</h1>
+        <p class="soft">캠페인 관리</p>
+
+        <div class="code-badge" style="margin-top: 18px">
+          <p class="soft">참가자에게 알려줄 초대코드</p>
+          <p class="value" id="inviteCode">—</p>
+        </div>
+
+        <div class="tiles" style="margin-top: 18px">
+          <div class="tile"><span>참가자</span><b id="statPeople">—</b></div>
+          <div class="tile"><span>실천</span><b id="statCheckins">—</b></div>
+          <div class="tile"><span>누적 절감</span><b id="statCo2">—</b></div>
+        </div>
+
+        <section>
+          <h2>캠페인 설정</h2>
+          <div class="card stack" style="margin-top: 12px">
+            <div>
+              <label for="cName">캠페인 이름</label>
+              <input id="cName" maxlength="60" />
+            </div>
+            <div class="grid-2">
+              <div>
+                <label for="cStart">시작일</label>
+                <input id="cStart" type="date" />
+              </div>
+              <div>
+                <label for="cEnd">종료일</label>
+                <input id="cEnd" type="date" />
+              </div>
+            </div>
+            <div class="grid-2">
+              <div>
+                <label for="cGoal">공동 목표 (kg CO2)</label>
+                <input id="cGoal" type="number" min="0" step="1" />
+              </div>
+              <div>
+                <label for="cNewAdmin">새 관리자 코드 (선택)</label>
+                <input
+                  id="cNewAdmin"
+                  type="password"
+                  placeholder="바꾸지 않으려면 비워두세요"
+                  autocomplete="new-password"
+                />
+              </div>
+            </div>
+            <p id="campaignMsg" class="msg"></p>
+            <div>
+              <button id="saveCampaign" class="btn-primary" type="button">
+                캠페인 설정 저장
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>실천 항목</h2>
+          <p class="soft" style="margin-top: 4px">
+            점수와 절감량은 체크인 시점의 값이 기록으로 남습니다. 여기서 값을
+            바꿔도 지난 기록과 순위는 변하지 않습니다.
+          </p>
+          <div id="challengeList" class="stack" style="margin-top: 14px"></div>
+
+          <h3 style="margin-top: 22px">항목 추가</h3>
+          <div id="challengeNew" class="stack" style="margin-top: 10px"></div>
+        </section>
+
+        <section>
+          <h2 id="participantTitle">참가자 현황</h2>
+          <div id="participantBox" class="scroll" style="margin-top: 12px"></div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      /*
+       * 배포된 /admin 과 같은 RPC 를 직접 부른다.
+       * 파일에 담기는 비밀은 없다 — 주소와 publishable 키는 공개되는 값이고,
+       * 관리자 코드는 열 때마다 입력받아 sessionStorage 에만 둔다.
+       */
+      const SUPABASE_URL = "https://qcglbxslbcsxkergrawb.supabase.co";
+      const SUPABASE_KEY = "sb_publishable_8jyy2HGKSTLSGfuXhLs6zw_XrePuAm6";
+      const STORE_KEY = "greenstep_admin_session";
+
+      const $ = (id) => document.getElementById(id);
+      let session = null; // { code, admin }
+
+      async function rpc(fn, args) {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+          method: "POST",
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(args),
+        });
+
+        const text = await res.text();
+        const body = text ? JSON.parse(text) : null;
+
+        if (!res.ok) {
+          // 서버가 hint 에 기계용 토큰을, message 에 사용자에게 보여줄 문장을 담는다.
+          const err = new Error(body?.message || "요청을 처리하지 못했습니다.");
+          err.hint = body?.hint;
+          throw err;
+        }
+        return body;
+      }
+
+      const fmtCo2 = (g) => {
+        if (g < 1000) return `${Math.round(g)}g`;
+        if (g < 1000000) return `${trim(g / 1000)}kg`;
+        return `${trim(g / 1000000)}t`;
+      };
+      const trim = (v) =>
+        v >= 10 ? Math.round(v).toLocaleString("ko-KR") : String(Math.round(v * 10) / 10);
+      const slot = (g, c, n) =>
+        g == null ? "–" : `${g}학년 ${c}반 ${n}번`;
+      const esc = (s) =>
+        String(s ?? "").replace(/[&<>"']/g, (m) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+        })[m]);
+
+      function say(el, text, kind) {
+        el.textContent = text;
+        el.className = `msg ${kind || ""}`;
+      }
+
+      // ── 로그인 ───────────────────────────────────────────────
+      async function signIn() {
+        const code = $("code").value.trim().toUpperCase();
+        const admin = $("admin").value;
+        if (!code || !admin) {
+          say($("loginMsg"), "초대코드와 관리자 코드를 모두 입력해주세요.", "err");
+          return;
+        }
+        $("signIn").disabled = true;
+        say($("loginMsg"), "확인하는 중…", "");
+        try {
+          await rpc("admin_campaign_overview", {
+            p_invite_code: code,
+            p_admin_code: admin,
+          });
+          session = { code, admin };
+          sessionStorage.setItem(STORE_KEY, JSON.stringify(session));
+          await openAdmin();
+        } catch (e) {
+          say($("loginMsg"), e.message, "err");
+        } finally {
+          $("signIn").disabled = false;
+        }
+      }
+
+      function signOut() {
+        sessionStorage.removeItem(STORE_KEY);
+        session = null;
+        $("adminView").classList.add("hidden");
+        $("loginView").classList.remove("hidden");
+        $("signOut").classList.add("hidden");
+        $("admin").value = "";
+        say($("loginMsg"), "", "");
+      }
+
+      // ── 관리 화면 ────────────────────────────────────────────
+      async function openAdmin() {
+        // 다 받아온 뒤에 화면을 바꾼다. 먼저 바꾸면 빈 칸이 잠깐 스쳐 지나간다.
+        await Promise.all([loadOverview(), loadChallenges(), loadParticipants()]);
+        $("loginView").classList.add("hidden");
+        $("adminView").classList.remove("hidden");
+        $("signOut").classList.remove("hidden");
+      }
+
+      async function loadOverview() {
+        const rows = await rpc("admin_campaign_overview", {
+          p_invite_code: session.code,
+          p_admin_code: session.admin,
+        });
+        const c = rows[0];
+        $("campaignName").textContent = c.name;
+        $("inviteCode").textContent = c.invite_code;
+        $("statPeople").textContent = `${c.participant_count}명`;
+        $("statCheckins").textContent = `${c.checkin_count}회`;
+        $("statCo2").textContent = fmtCo2(c.total_co2_g);
+        $("cName").value = c.name;
+        $("cStart").value = c.start_date;
+        $("cEnd").value = c.end_date;
+        $("cGoal").value = Math.round(c.goal_co2_g / 1000);
+      }
+
+      async function saveCampaign() {
+        const newAdmin = $("cNewAdmin").value.trim();
+        $("saveCampaign").disabled = true;
+        say($("campaignMsg"), "저장하는 중…", "");
+        try {
+          await rpc("admin_update_campaign", {
+            p_invite_code: session.code,
+            p_admin_code: session.admin,
+            p_name: $("cName").value.trim(),
+            p_start_date: $("cStart").value,
+            p_end_date: $("cEnd").value,
+            p_goal_co2_g: Math.round(Number($("cGoal").value) * 1000),
+            p_new_admin_code: newAdmin || null,
+          });
+          // 코드를 바꿨으면 이후 요청도 새 코드로 나가야 한다.
+          if (newAdmin) {
+            session.admin = newAdmin;
+            sessionStorage.setItem(STORE_KEY, JSON.stringify(session));
+            $("cNewAdmin").value = "";
+          }
+          await loadOverview();
+          say($("campaignMsg"), "저장했습니다.", "ok");
+        } catch (e) {
+          say($("campaignMsg"), e.message, "err");
+        } finally {
+          $("saveCampaign").disabled = false;
+        }
+      }
+
+      function challengeCard(ch) {
+        const id = ch ? ch.id : "new";
+        const used = ch && ch.checkin_count > 0;
+        return `
+          <div class="card stack" data-id="${esc(id)}">
+            <div class="challenge-head">
+              <div>
+                <label for="icon-${esc(id)}">아이콘</label>
+                <input id="icon-${esc(id)}" data-f="icon" maxlength="4"
+                       style="text-align:center" value="${esc(ch?.icon ?? "")}" placeholder="🌱" />
+              </div>
+              <div>
+                <label for="title-${esc(id)}">항목 이름</label>
+                <input id="title-${esc(id)}" data-f="title" maxlength="40" value="${esc(ch?.title ?? "")}" />
+              </div>
+            </div>
+            <div>
+              <label for="desc-${esc(id)}">설명</label>
+              <input id="desc-${esc(id)}" data-f="description" maxlength="200" value="${esc(ch?.description ?? "")}" />
+            </div>
+            <div class="grid-3">
+              <div>
+                <label for="pt-${esc(id)}">점수</label>
+                <input id="pt-${esc(id)}" data-f="points" type="number" min="1" max="100" value="${ch?.points ?? 2}" />
+              </div>
+              <div>
+                <label for="co2-${esc(id)}">절감 g</label>
+                <input id="co2-${esc(id)}" data-f="co2" type="number" min="0" max="100000" value="${ch?.co2_saved_g ?? 100}" />
+              </div>
+              <div>
+                <label for="ord-${esc(id)}">순서</label>
+                <input id="ord-${esc(id)}" data-f="order" type="number" value="${ch?.sort_order ?? 99}" />
+              </div>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:400;color:var(--ink);font-size:.9rem">
+              <input type="checkbox" data-f="active" ${ch?.is_active !== false ? "checked" : ""} />
+              참가자 화면에 표시
+            </label>
+            <p class="msg" data-f="msg"></p>
+            <div class="row">
+              <button class="btn-primary" data-act="save" type="button">${ch ? "저장" : "항목 추가"}</button>
+              ${ch ? `<span class="soft mono">실천 ${ch.checkin_count}회</span>` : ""}
+              ${ch && !used ? `<button class="btn-link" data-act="delete" type="button">항목 삭제</button>` : ""}
+            </div>
+            ${
+              used
+                ? `<p class="soft">이미 실천 기록이 있어 삭제할 수 없습니다. 더 쓰지 않으려면 위 체크박스를 꺼주세요.</p>`
+                : ""
+            }
+          </div>`;
+      }
+
+      async function loadChallenges() {
+        const rows = await rpc("admin_list_challenges", {
+          p_invite_code: session.code,
+          p_admin_code: session.admin,
+        });
+        $("challengeList").innerHTML = rows.map(challengeCard).join("");
+        const nextOrder = rows.reduce((m, c) => Math.max(m, c.sort_order), 0) + 1;
+        $("challengeNew").innerHTML = challengeCard(null);
+        $("challengeNew").querySelector('[data-f="order"]').value = nextOrder;
+      }
+
+      function readCard(card) {
+        const v = (f) => card.querySelector(`[data-f="${f}"]`);
+        return {
+          icon: v("icon").value,
+          title: v("title").value.trim(),
+          description: v("description").value,
+          points: Number(v("points").value),
+          co2: Number(v("co2").value),
+          order: Number(v("order").value),
+          active: v("active").checked,
+          msg: v("msg"),
+        };
+      }
+
+      async function onChallengeClick(e) {
+        const btn = e.target.closest("button[data-act]");
+        if (!btn) return;
+        const card = btn.closest(".card");
+        const id = card.dataset.id === "new" ? null : card.dataset.id;
+        const d = readCard(card);
+        btn.disabled = true;
+
+        try {
+          if (btn.dataset.act === "delete") {
+            await rpc("admin_delete_challenge", {
+              p_invite_code: session.code,
+              p_admin_code: session.admin,
+              p_challenge_id: id,
+            });
+          } else {
+            if (!d.title) throw new Error("항목 이름을 입력해주세요.");
+            await rpc("admin_save_challenge", {
+              p_invite_code: session.code,
+              p_admin_code: session.admin,
+              p_challenge_id: id,
+              p_title: d.title,
+              p_description: d.description,
+              p_icon: d.icon,
+              p_points: d.points,
+              p_co2_saved_g: d.co2,
+              p_sort_order: d.order,
+              p_is_active: d.active,
+            });
+          }
+          await Promise.all([loadChallenges(), loadOverview()]);
+        } catch (err) {
+          say(d.msg, err.message, "err");
+          btn.disabled = false;
+        }
+      }
+
+      async function loadParticipants() {
+        const rows = await rpc("admin_list_participants", {
+          p_invite_code: session.code,
+          p_admin_code: session.admin,
+        });
+        $("participantTitle").textContent = `참가자 현황 (${rows.length}명)`;
+
+        if (rows.length === 0) {
+          $("participantBox").innerHTML =
+            `<p class="soft" style="border:2px dashed var(--rule);border-radius:14px;padding:20px">아직 참가자가 없습니다. 위 초대코드를 공유해주세요.</p>`;
+          return;
+        }
+
+        $("participantBox").innerHTML = `
+          <table>
+            <thead>
+              <tr><th>자리</th><th>닉네임</th><th>점수</th><th>실천</th><th>절감</th><th>참가일</th></tr>
+            </thead>
+            <tbody>
+              ${rows
+                .map(
+                  (p) => `<tr>
+                    <td class="mono" style="white-space:nowrap">${esc(slot(p.grade, p.class_no, p.student_no))}</td>
+                    <td style="font-weight:700">${esc(p.nickname)}</td>
+                    <td class="mono">${p.total_points}</td>
+                    <td class="mono">${p.checkin_count}</td>
+                    <td class="mono">${esc(fmtCo2(p.total_co2_g))}</td>
+                    <td class="mono" style="color:var(--ink-soft)">${esc(String(p.joined_at).slice(0, 10))}</td>
+                  </tr>`,
+                )
+                .join("")}
+            </tbody>
+          </table>`;
+      }
+
+      // ── 붙이기 ───────────────────────────────────────────────
+      $("signIn").addEventListener("click", signIn);
+      $("signOut").addEventListener("click", signOut);
+      $("saveCampaign").addEventListener("click", saveCampaign);
+      $("challengeList").addEventListener("click", onChallengeClick);
+      $("challengeNew").addEventListener("click", onChallengeClick);
+      $("admin").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") signIn();
+      });
+
+      // 탭을 새로고침해도 다시 입력하지 않도록
+      (async () => {
+        const saved = sessionStorage.getItem(STORE_KEY);
+        if (!saved) return;
+        try {
+          session = JSON.parse(saved);
+          await openAdmin();
+        } catch {
+          signOut();
+        }
+      })();
+    </script>
+  </body>
+</html>
