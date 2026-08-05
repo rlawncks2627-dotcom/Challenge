@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { CharacterRow } from "@/components/characters";
+import { CharacterCredit, CharacterRow } from "@/components/characters";
 import { InviteCodeForm } from "@/components/invite-code-form";
 import { Wordmark } from "@/components/wordmark";
 import { getCurrentParticipant } from "@/lib/participant";
@@ -38,6 +38,7 @@ export default async function Home() {
           초대코드는 선생님이나 캠페인 운영자에게 받으세요. 가입도 비밀번호도
           없이 학년·반·번호만 고르면 참가됩니다.
         </p>
+        <CharacterCredit />
       </div>
     </main>
   );
