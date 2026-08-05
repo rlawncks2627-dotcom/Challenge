@@ -8,6 +8,7 @@ import {
   type Challenge,
   type TodayCheckin,
 } from "@/components/challenge-card";
+import { CheckinCheer } from "@/components/checkin-cheer";
 import { CheckinSheet, type SheetSubmit } from "@/components/checkin-sheet";
 import { createCheckin, deleteCheckin } from "@/lib/checkins";
 
@@ -40,6 +41,8 @@ export function ChallengeList({
   const [mutating, setMutating] = useState(false);
   const [sheetFor, setSheetFor] = useState<Challenge | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // 도장을 찍을 때마다 올라간다. key 로 써서 축하 애니메이션을 다시 시작시킨다.
+  const [cheer, setCheer] = useState(0);
 
   // 진행 중 = 네트워크 요청 중이거나, 서버 재렌더를 기다리는 중.
   // 두 상태에서 파생시키면 정리해줄 것이 없다.
@@ -68,6 +71,9 @@ export function ChallengeList({
       return;
     }
 
+    // 축하는 찍을 때만. 취소할 때 물범이 튀어나오면 놀리는 것처럼 보인다.
+    if (!existing) setCheer((n) => n + 1);
+
     // 재렌더를 먼저 걸어야 isPending 이 이어받는다. 순서가 반대면 한 프레임 깜빡인다.
     startTransition(() => router.refresh());
     setMutating(false);
@@ -95,6 +101,7 @@ export function ChallengeList({
       return;
     }
 
+    setCheer((n) => n + 1);
     startTransition(() => router.refresh());
     setMutating(false);
   }
@@ -131,6 +138,8 @@ export function ChallengeList({
           onSubmit={(value) => submitSheet(sheetFor, value)}
         />
       )}
+
+      {cheer > 0 && <CheckinCheer key={cheer} token={cheer} />}
     </>
   );
 }

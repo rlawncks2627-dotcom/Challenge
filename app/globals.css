@@ -162,6 +162,37 @@ body::after {
   }
 }
 
+/*
+ * 도장을 찍은 순간의 축하.
+ * 아래에서 톡 튀어올랐다가 스스로 사라진다. 아이가 한 번 더 누르고 싶게
+ * 만드는 게 목적이라, 길게 붙잡아두지 않는다.
+ */
+.cheer {
+  animation: cheer-pop 1.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes cheer-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) scale(0.55) rotate(-6deg);
+  }
+  22% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.08) rotate(2deg);
+  }
+  36% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  75% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.94);
+  }
+}
+
 /* 함께 모은 결과의 나무. 바람에 아주 조금 흔들린다. */
 .sway {
   transform-origin: 50% 100%;

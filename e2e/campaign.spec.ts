@@ -55,6 +55,27 @@ test.describe("참가자 흐름", () => {
     expect(title.length).toBeGreaterThan(0);
   });
 
+  test("도장을 찍으면 물범이 잠깐 나타났다 사라진다", async ({ page }) => {
+    await login(page);
+
+    const cheer = page.locator(".cheer");
+    await expect(cheer).toHaveCount(0);
+
+    await firstUnchecked(page).click();
+    await expect(cheer).toBeVisible();
+
+    // 누르는 것을 막으면 안 된다.
+    await expect(cheer).toHaveCSS("pointer-events", "none");
+
+    // 스스로 물러난다. DOM 에는 남지만 보이지 않는 상태가 된다.
+    await expect
+      .poll(
+        () => cheer.evaluate((el) => Number(getComputedStyle(el).opacity)),
+        { timeout: 6000 },
+      )
+      .toBeLessThan(0.05);
+  });
+
   test("같은 자리를 다시 고르면 기존 기록으로 이어진다", async ({ page }) => {
     await login(page);
     const before = await page.locator('[data-stamped="true"]').count();
