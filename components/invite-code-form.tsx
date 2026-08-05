@@ -33,7 +33,7 @@ export function InviteCodeForm() {
           placeholder="GREEN2026"
           aria-invalid={state?.field === "code" || undefined}
           aria-describedby={state?.field === "code" ? "code-error" : undefined}
-          className="w-full rounded-sm border-2 border-rule bg-paper-sunk px-4 py-4 text-center font-mono text-xl tracking-[0.3em] uppercase text-ink placeholder:text-ink-soft placeholder:opacity-45 focus:border-green focus:outline-none"
+          className="w-full rounded-sm border-2 border-rule bg-paper/70 px-4 py-4 text-center font-mono text-xl tracking-[0.3em] uppercase text-ink shadow-sm placeholder:text-ink-soft placeholder:opacity-50 focus:border-green focus:bg-paper focus:outline-none"
         />
       </div>
 

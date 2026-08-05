@@ -36,7 +36,7 @@ export default async function JoinPage({ params }: PageProps<"/join/[code]">) {
         </div>
         <Link
           href="/"
-          className="w-full rounded-sm border-2 border-ink px-5 py-4 text-center font-semibold"
+          className="w-full rounded-full border-2 border-green/50 bg-paper/60 px-5 py-4 text-center font-bold"
         >
           코드 다시 입력
         </Link>

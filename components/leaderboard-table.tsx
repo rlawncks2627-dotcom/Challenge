@@ -57,7 +57,7 @@ function Row({ row, mine }: { row: LeaderboardRow; mine: boolean }) {
   return (
     <li
       className={`flex items-center gap-3 border-b border-rule py-3 ${
-        mine ? "-mx-3 border-l-4 border-l-green bg-paper-sunk px-3" : ""
+        mine ? "-mx-3 rounded-sm border-l-4 border-l-green bg-mint/40 px-3" : ""
       }`}
     >
       <span

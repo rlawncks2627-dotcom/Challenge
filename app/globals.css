@@ -1,56 +1,98 @@
 @import "tailwindcss";
 
 /*
- * 그린스텝 — 리소그래프 인쇄물의 어휘.
- * 캠페인 포스터는 실제로 리소로 찍힌다. 잉크는 4색뿐이고, 그라데이션이 없고,
- * 판이 살짝 어긋나며 겹친 곳에서 제3의 색이 난다. 그 규칙을 그대로 따른다.
+ * 그린스텝 — 지브리 배경화처럼.
+ *
+ * 참고한 것: 토토로의 숲(연둣빛 나뭇잎과 하늘), 포뇨의 바다(맑은 시안),
+ * 키키의 가게 간판(빛바랜 나무와 크림색 페인트).
+ *
+ * 규칙 세 가지
+ *  1. 바탕은 파스텔. 하늘에서 들판으로 옮겨가는 아주 옅은 그라데이션 위에
+ *     모든 것이 놓인다. 오래 봐도 눈이 아프지 않아야 한다.
+ *  2. 면은 숲 연두(#A3C9A8)와 물빛 민트(#B8E0D2). 선은 가늘고 부드럽게.
+ *  3. 원색은 '지금 누르라'는 곳에만. 포뇨의 빨강 하나면 충분하다.
  */
 
 :root {
-  --paper: #edefe6; /* 재생지 */
-  --paper-sunk: #e3e7d9; /* 눌린 면 */
-  --ink: #16241b; /* 먹 */
-  --ink-soft: #16241b8c;
-  --green: #00a95c; /* Riso Green */
-  --pink: #ff48b0; /* Riso Fluorescent Pink — 딱 한 곳에만 */
-  --blue: #3d5588; /* Riso Federal Blue */
-  --rule: #16241b2e;
-  --overprint: multiply;
-  --grain: 0.5;
+  /* 바탕 — 하늘에서 들판으로 */
+  --sky-top: #dcedf2;
+  --paper: #f3f8ef;
+  --paper-sunk: #e7f1e8;
+
+  /* 면 */
+  --sage: #a3c9a8; /* 숲속 연두 */
+  --mint: #b8e0d2; /* 맑은 물빛 */
+
+  /* 글자 — 검정 대신 이끼 먹은 짙은 초록 */
+  --ink: #35473c;
+  --ink-soft: #35473ca8;
+  --rule: #35473c26;
+
+  /* 강조 */
+  --green: #4e9268; /* 잎사귀. 도장·게이지·선택된 탭 */
+  --sky: #6fa8ce; /* 포뇨의 바다 */
+  --accent: #e2563d; /* 지금 누르라는 곳에만 */
+  --berry: #b0577f; /* 무언가 잘못됐을 때 */
+
+  --shadow: 0 2px 10px rgb(53 71 60 / 0.09);
+  --shadow-lift: 0 4px 16px rgb(53 71 60 / 0.13);
+  --grain: 0.28;
+  --grain-blend: soft-light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #131611;
-    --paper-sunk: #1c211a;
-    --ink: #edefe6;
-    --ink-soft: #edefe68c;
-    --green: #2ad07f;
-    --pink: #ff6ec0;
-    --blue: #93a9dd;
-    --rule: #edefe62e;
-    --overprint: screen; /* 어두운 종이 위에서는 잉크가 겹칠수록 밝아진다 */
-    --grain: 0.22;
+    /* 밤의 숲 */
+    --sky-top: #15272c;
+    --paper: #16221d;
+    --paper-sunk: #1e2d27;
+
+    --sage: #6f9c7a;
+    --mint: #7fb9a8;
+
+    --ink: #e7f0e8;
+    --ink-soft: #e7f0e8a8;
+    --rule: #e7f0e826;
+
+    --green: #7cc599;
+    --sky: #97c5e2;
+    --accent: #ff7b5e;
+    --berry: #e894b8;
+
+    --shadow: 0 2px 10px rgb(0 0 0 / 0.35);
+    --shadow-lift: 0 4px 16px rgb(0 0 0 / 0.45);
+    --grain: 0.2;
+    --grain-blend: overlay;
   }
 }
 
 @theme inline {
   --color-paper: var(--paper);
   --color-paper-sunk: var(--paper-sunk);
+  --color-sage: var(--sage);
+  --color-mint: var(--mint);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
-  --color-green: var(--green);
-  --color-pink: var(--pink);
-  --color-blue: var(--blue);
   --color-rule: var(--rule);
+  --color-green: var(--green);
+  --color-blue: var(--sky);
+  --color-accent: var(--accent);
+  --color-pink: var(--berry);
 
-  --font-display: var(--font-gasoek), sans-serif;
-  --font-sans: var(--font-plex-kr), sans-serif;
+  --font-display: var(--font-jua), sans-serif;
+  --font-sans: var(--font-gothic), sans-serif;
   --font-mono: var(--font-plex-mono), monospace;
+
+  /* 지브리에 직각은 없다. 모서리를 한 번에 부드럽게 만든다. */
+  --radius-sm: 0.875rem;
+  --radius-lg: 1.5rem;
 }
 
 body {
-  background: var(--paper);
+  background:
+    linear-gradient(180deg, var(--sky-top) 0%, var(--paper) 42%) no-repeat,
+    var(--paper);
+  background-attachment: fixed;
   color: var(--ink);
   font-family: var(--font-sans), sans-serif;
   /* 한국어는 어절 단위로 끊어야 읽힌다. */
@@ -58,7 +100,7 @@ body {
   overflow-wrap: break-word;
 }
 
-/* 종이 결. 화면 전체에 고정으로 한 겹 덮는다. */
+/* 수채 종이의 결. 아주 옅게 한 겹만. */
 body::after {
   content: "";
   position: fixed;
@@ -66,29 +108,22 @@ body::after {
   z-index: 50;
   pointer-events: none;
   opacity: var(--grain);
-  mix-blend-mode: var(--overprint);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  mix-blend-mode: var(--grain-blend);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.62' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
 }
 
-/* 오버프린트: 판이 어긋나 두 잉크가 겹치는 자리. 이 앱의 서명이다. */
-.overprint {
-  position: relative;
+/* 워드마크. 손으로 칠한 간판 글씨처럼 살짝 떠 있다. */
+.wordmark {
   display: inline-block;
+  font-family: var(--font-display), sans-serif;
   color: var(--green);
-}
-
-.overprint::before {
-  content: attr(data-text);
-  position: absolute;
-  left: 0.055em;
-  top: 0.045em;
-  color: var(--pink);
-  mix-blend-mode: var(--overprint);
-  pointer-events: none;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 0 color-mix(in srgb, var(--sage) 55%, transparent);
 }
 
 /*
- * 도장. 캠페인 스탬프 카드에서 그대로 가져왔다.
+ * 도장. 캠페인 스탬프 카드에서 가져왔다.
  * 손으로 찍은 도장은 반듯하지 않으므로 살짝 기울여 앉힌다.
  */
 .stamp {
@@ -99,46 +134,39 @@ body::after {
   flex: none;
   border: 2px solid var(--rule);
   border-radius: 9999px;
-  transition: border-color 0.15s ease;
+  background: color-mix(in srgb, var(--paper) 70%, transparent);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .stamp[data-stamped="true"] {
-  position: relative;
-  border-color: var(--green);
-  color: var(--green);
-  transform: rotate(-9deg);
-  animation: stamp-press 0.22s ease-out;
-}
-
-/* 겹쳐 찍힌 두 번째 판. 워드마크의 오버프린트와 같은 규칙이다. */
-.stamp[data-stamped="true"]::after {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  border: 2px solid var(--pink);
-  border-radius: 9999px;
-  transform: translate(2px, 2px);
-  mix-blend-mode: var(--overprint);
+  border-color: color-mix(in srgb, var(--green) 70%, transparent);
+  background: var(--green);
+  color: var(--paper);
+  transform: rotate(-7deg);
+  box-shadow: var(--shadow);
+  animation: stamp-press 0.28s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
 @keyframes stamp-press {
   0% {
-    transform: rotate(-9deg) scale(1.5);
+    transform: rotate(-7deg) scale(1.45);
     opacity: 0;
   }
   60% {
-    transform: rotate(-9deg) scale(0.94);
+    transform: rotate(-7deg) scale(0.95);
     opacity: 1;
   }
   100% {
-    transform: rotate(-9deg) scale(1);
+    transform: rotate(-7deg) scale(1);
   }
 }
 
 /* 키보드 초점은 항상 보여야 한다. */
 :focus-visible {
   outline: 2px solid var(--green);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {

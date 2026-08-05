@@ -7,42 +7,52 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Gasoek+One&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Jua&family=Gothic+A1:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap"
       rel="stylesheet"
     />
     <style>
       /*
-       * 그린스텝 미리보기 — 리소그래프 인쇄물의 어휘.
-       * 잉크 3색, 그라데이션 없음, 판이 어긋난 자리에서 제3의 색이 난다.
-       * 실제 앱과 같은 토큰을 쓴다.
+       * 그린스텝 미리보기 — 지브리 배경화처럼.
+       * 파스텔 바탕 위에 숲 연두와 물빛 민트를 얹고, 원색은 '지금 누르라'는
+       * 곳에만 쓴다. 실제 앱과 같은 토큰이다.
        */
       :root {
-        --paper: #edefe6;
-        --paper-sunk: #e3e7d9;
-        --ink: #16241b;
-        --ink-soft: #16241b8c;
-        --green: #00a95c;
-        --pink: #ff48b0;
-        --blue: #3d5588;
-        --rule: #16241b2e;
-        --overprint: multiply;
-        --grain: 0.5;
-        --shell: #dfe3d6;
+        --sky-top: #dcedf2;
+        --paper: #f3f8ef;
+        --paper-sunk: #e7f1e8;
+        --sage: #a3c9a8;
+        --mint: #b8e0d2;
+        --ink: #35473c;
+        --ink-soft: #35473ca8;
+        --rule: #35473c26;
+        --green: #4e9268;
+        --blue: #6fa8ce;
+        --accent: #e2563d;
+        --pink: #b0577f;
+        --shadow: 0 2px 10px rgb(53 71 60 / 0.09);
+        --grain: 0.28;
+        --grain-blend: soft-light;
+        --shell: #e4eee6;
       }
 
       @media (prefers-color-scheme: dark) {
         :root {
-          --paper: #131611;
-          --paper-sunk: #1c211a;
-          --ink: #edefe6;
-          --ink-soft: #edefe68c;
-          --green: #2ad07f;
-          --pink: #ff6ec0;
-          --blue: #93a9dd;
-          --rule: #edefe62e;
-          --overprint: screen;
-          --grain: 0.22;
-          --shell: #0c0e0a;
+          --sky-top: #15272c;
+          --paper: #16221d;
+          --paper-sunk: #1e2d27;
+          --sage: #6f9c7a;
+          --mint: #7fb9a8;
+          --ink: #e7f0e8;
+          --ink-soft: #e7f0e8a8;
+          --rule: #e7f0e826;
+          --green: #7cc599;
+          --blue: #97c5e2;
+          --accent: #ff7b5e;
+          --pink: #e894b8;
+          --shadow: 0 2px 10px rgb(0 0 0 / 0.35);
+          --grain: 0.2;
+          --grain-blend: overlay;
+          --shell: #101a16;
         }
       }
 
@@ -53,14 +63,18 @@
       }
 
       body {
-        background: var(--shell);
+        background:
+          linear-gradient(180deg, var(--sky-top) 0%, var(--shell) 40%) no-repeat,
+          var(--shell);
+        background-attachment: fixed;
         color: var(--ink);
-        font-family: "IBM Plex Sans KR", system-ui, sans-serif;
+        font-family: "Gothic A1", system-ui, sans-serif;
         word-break: keep-all;
         overflow-wrap: break-word;
         -webkit-font-smoothing: antialiased;
       }
 
+      /* 수채 종이의 결. 아주 옅게 한 겹만. */
       body::after {
         content: "";
         position: fixed;
@@ -68,26 +82,17 @@
         z-index: 50;
         pointer-events: none;
         opacity: var(--grain);
-        mix-blend-mode: var(--overprint);
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+        mix-blend-mode: var(--grain-blend);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.62' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
       }
 
-      /* 오버프린트: 이 디자인의 서명. 워드마크에만 쓴다. */
-      .overprint {
-        position: relative;
+      /* 워드마크. 손으로 칠한 간판 글씨처럼 살짝 떠 있다. */
+      .wordmark {
         display: inline-block;
-        font-family: "Gasoek One", system-ui, sans-serif;
+        font-family: "Jua", system-ui, sans-serif;
         color: var(--green);
-        line-height: 1;
-      }
-      .overprint::before {
-        content: attr(data-text);
-        position: absolute;
-        left: 0.055em;
-        top: 0.045em;
-        color: var(--pink);
-        mix-blend-mode: var(--overprint);
-        pointer-events: none;
+        line-height: 1.15;
+        text-shadow: 0 2px 0 color-mix(in srgb, var(--sage) 55%, transparent);
       }
 
       .page {
@@ -112,7 +117,7 @@
         font-weight: 500;
       }
       .intro .thesis em {
-        font-family: "Gasoek One", system-ui, sans-serif;
+        font-family: "Jua", system-ui, sans-serif;
         font-style: normal;
         color: var(--green);
         font-size: 1.35rem;
@@ -140,7 +145,8 @@
       .swatch i {
         width: 20px;
         height: 20px;
-        border: 2px solid var(--ink);
+        border-radius: 999px;
+        border: 2px solid color-mix(in srgb, var(--ink) 25%, transparent);
         display: block;
       }
 
@@ -179,9 +185,11 @@
          높이를 고정하면 내용이 긴 화면이 잘린다. 최소 높이만 주고 내용에
          맞춰 늘어나게 둔다. */
       .phone {
-        background: var(--paper);
-        border: 2px solid var(--ink);
-        border-radius: 6px;
+        background: linear-gradient(180deg, var(--sky-top) 0%, var(--paper) 38%);
+        border: 2px solid color-mix(in srgb, var(--green) 35%, transparent);
+        border-radius: 26px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
         min-height: 620px;
         display: flex;
         flex-direction: column;
@@ -231,13 +239,14 @@
       }
       .field {
         border: 2px solid var(--rule);
-        background: var(--paper-sunk);
-        border-radius: 3px;
+        background: color-mix(in srgb, var(--paper) 70%, transparent);
+        border-radius: 14px;
         padding: 12px 14px;
         font-size: 0.95rem;
       }
       .field.focus {
         border-color: var(--green);
+        background: var(--paper);
       }
       .field.code {
         font-family: "IBM Plex Mono", monospace;
@@ -249,19 +258,21 @@
         color: var(--ink-soft);
         opacity: 0.55;
       }
+      /* 파스텔 위에서 이 색만 원색이다. '지금 누르라'는 곳에만 쓴다. */
       .btn {
-        background: var(--green);
-        color: var(--paper);
-        border-radius: 3px;
+        background: var(--accent);
+        color: #fff;
+        border-radius: 999px;
+        box-shadow: var(--shadow);
         padding: 14px;
         text-align: center;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 0.95rem;
       }
       .btn.ghost {
-        background: transparent;
+        background: color-mix(in srgb, var(--paper) 60%, transparent);
         color: var(--ink);
-        border: 2px solid var(--ink);
+        border: 2px solid color-mix(in srgb, var(--green) 50%, transparent);
       }
       .stack {
         display: flex;
@@ -281,7 +292,7 @@
         font-family: "IBM Plex Mono", monospace;
       }
       .display {
-        font-family: "Gasoek One", system-ui, sans-serif;
+        font-family: "Jua", system-ui, sans-serif;
         line-height: 1;
       }
       .green {
@@ -320,12 +331,17 @@
       /* 실천 항목 카드 + 도장 */
       .card {
         border: 2px solid var(--rule);
-        background: var(--paper-sunk);
-        border-radius: 3px;
+        background: color-mix(in srgb, var(--paper) 70%, transparent);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
         padding: 13px 14px;
         display: flex;
         align-items: center;
         gap: 12px;
+      }
+      .card.done {
+        border-color: color-mix(in srgb, var(--green) 40%, transparent);
+        background: color-mix(in srgb, var(--mint) 45%, transparent);
       }
       .card .icon {
         font-size: 1.35rem;
@@ -340,41 +356,39 @@
         color: var(--ink-soft);
       }
 
+      /* 손으로 찍은 도장은 반듯하지 않으므로 살짝 기울여 앉힌다. */
       .stamp {
         width: 40px;
         height: 40px;
         flex: none;
         border: 2px solid var(--rule);
+        background: color-mix(in srgb, var(--paper) 70%, transparent);
         border-radius: 999px;
         display: grid;
         place-items: center;
       }
       .stamp.on {
-        position: relative;
-        border-color: var(--green);
-        color: var(--green);
-        transform: rotate(-9deg);
+        border-color: color-mix(in srgb, var(--green) 70%, transparent);
+        background: var(--green);
+        color: #fff;
+        transform: rotate(-7deg);
+        box-shadow: var(--shadow);
         font-size: 1.15rem;
       }
-      .stamp.on::after {
-        content: "";
-        position: absolute;
-        inset: -2px;
-        border: 2px solid var(--pink);
-        border-radius: 999px;
-        transform: translate(2px, 2px);
-        mix-blend-mode: var(--overprint);
-      }
 
-      /* 게이지 */
+      /* 게이지 — 물이 차오르듯 */
       .gauge {
-        height: 20px;
-        border: 2px solid var(--ink);
+        height: 22px;
+        border: 2px solid color-mix(in srgb, var(--green) 30%, transparent);
+        background: color-mix(in srgb, var(--paper) 70%, transparent);
+        border-radius: 999px;
+        overflow: hidden;
       }
       .gauge i {
         display: block;
         height: 100%;
-        background: var(--green);
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--mint), var(--green));
       }
 
       /* 순위표 */
@@ -387,8 +401,9 @@
         font-size: 0.88rem;
       }
       .rank.me {
-        background: var(--paper-sunk);
+        background: color-mix(in srgb, var(--mint) 40%, transparent);
         border-left: 4px solid var(--green);
+        border-radius: 12px;
         margin: 0 -12px;
         padding: 9px 12px;
       }
@@ -400,7 +415,7 @@
         color: var(--ink-soft);
       }
       .rank .no.top {
-        font-family: "Gasoek One", system-ui, sans-serif;
+        font-family: "Jua", system-ui, sans-serif;
         color: var(--green);
         font-size: 1rem;
       }
@@ -429,7 +444,7 @@
         place-items: center;
         font-size: 0.68rem;
         border: 1px solid var(--rule);
-        border-radius: 3px;
+        border-radius: 8px;
         color: var(--ink-soft);
       }
       .cal .wd {
@@ -442,21 +457,21 @@
       }
       .cal .d1 {
         border-color: var(--green);
-        background: color-mix(in srgb, var(--green) 25%, transparent);
+        background: color-mix(in srgb, var(--mint) 60%, transparent);
         color: var(--ink);
-        font-family: "Gasoek One", system-ui, sans-serif;
+        font-family: "Jua", system-ui, sans-serif;
       }
       .cal .d2 {
         border-color: var(--green);
-        background: color-mix(in srgb, var(--green) 55%, transparent);
-        color: var(--paper);
-        font-family: "Gasoek One", system-ui, sans-serif;
+        background: color-mix(in srgb, var(--green) 60%, transparent);
+        color: #fff;
+        font-family: "Jua", system-ui, sans-serif;
       }
       .cal .d4 {
         border-color: var(--green);
         background: var(--green);
-        color: var(--paper);
-        font-family: "Gasoek One", system-ui, sans-serif;
+        color: #fff;
+        font-family: "Jua", system-ui, sans-serif;
       }
       .cal .today {
         outline: 2px solid var(--green);
@@ -466,7 +481,7 @@
       /* 피드 */
       .shot {
         border: 2px solid var(--rule);
-        border-radius: 3px;
+        border-radius: 14px;
         height: 130px;
         background: repeating-linear-gradient(
           -45deg,
@@ -487,12 +502,13 @@
       }
       .tile {
         border: 2px solid var(--rule);
-        border-radius: 3px;
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--paper) 60%, transparent);
         padding: 10px;
       }
       .tile b {
         display: block;
-        font-family: "Gasoek One", system-ui, sans-serif;
+        font-family: "Jua", system-ui, sans-serif;
         font-size: 1.15rem;
         font-weight: 400;
         margin-top: 4px;
@@ -504,7 +520,7 @@
 
       /* 하단 탭 */
       .tabs {
-        border-top: 2px solid var(--rule);
+        border-top: 2px solid color-mix(in srgb, var(--green) 25%, transparent);
         display: flex;
         background: var(--paper);
       }
@@ -522,7 +538,7 @@
       .tabs i {
         display: block;
         width: 26px;
-        height: 4px;
+        height: 5px;
         border-radius: 999px;
         margin: 0 auto 6px;
         background: transparent;
@@ -580,7 +596,7 @@
   <body>
     <div class="page">
       <header class="intro">
-        <span class="overprint mark" data-text="그린스텝" style="font-size: 2rem"
+        <span class="wordmark mark" style="font-size: 2rem"
           >그린스텝</span
         >
         <h1 class="display">화면 미리보기</h1>
@@ -599,30 +615,43 @@
         </p>
 
         <p class="meta">
-          디자인 방향은 <b>리소그래프로 인쇄한 캠페인 포스터</b>입니다. 잉크
-          3색, 그라데이션 없음, 판이 어긋난 자리에서 제3의 색이 나는 오버프린트를
-          워드마크에 딱 한 번 씁니다.
+          디자인 방향은 <b>지브리 배경화</b>입니다. 토토로의 숲(연둣빛 나뭇잎과
+          하늘), 포뇨의 바다(맑은 시안), 키키의 가게 간판(빛바랜 나무와 크림색
+          페인트)에서 가져왔습니다.
+        </p>
+
+        <p class="meta">
+          규칙은 셋입니다. <b>바탕은 파스텔</b> — 하늘에서 들판으로 옮겨가는 아주
+          옅은 그라데이션 위에 모든 것이 놓입니다. 오래 봐도 눈이 아프지 않아야
+          합니다. <b>면은 숲 연두와 물빛 민트</b>, 선은 가늘고 부드럽게.
+          <b>원색은 &lsquo;지금 누르라&rsquo;는 곳에만</b> — 포뇨의 빨강 하나면
+          충분합니다.
         </p>
 
         <div class="swatches">
           <span class="swatch"
-            ><i style="background: #00a95c"></i>Riso Green #00A95C</span
+            ><i style="background: #a3c9a8"></i>숲속 연두 #A3C9A8</span
           >
           <span class="swatch"
-            ><i style="background: #ff48b0"></i>Fluorescent Pink #FF48B0</span
+            ><i style="background: #b8e0d2"></i>맑은 물빛 #B8E0D2</span
           >
           <span class="swatch"
-            ><i style="background: #3d5588"></i>Federal Blue #3D5588</span
+            ><i style="background: #4e9268"></i>잎사귀 #4E9268</span
           >
           <span class="swatch"
-            ><i style="background: #edefe6"></i>재생지 #EDEFE6</span
+            ><i style="background: #6fa8ce"></i>포뇨의 바다 #6FA8CE</span
+          >
+          <span class="swatch"
+            ><i style="background: #e2563d"></i>행동 버튼 #E2563D</span
+          >
+          <span class="swatch"
+            ><i style="background: #f3f8ef"></i>들판 바탕 #F3F8EF</span
           >
         </div>
 
         <p class="meta">
-          Gasoek One(포스터용 국문 디스플레이 · 워드마크와 숫자에만) + IBM Plex
-          Sans KR(본문) + IBM Plex Mono(코드 — 코드니까 실제로 모노가 의미를
-          가짐)
+          Jua(손으로 칠한 간판 글씨 · 워드마크와 큰 숫자에만) + Gothic A1(본문) +
+          IBM Plex Mono(코드 — 코드니까 실제로 모노가 의미를 가짐)
         </p>
       </header>
 
@@ -631,7 +660,7 @@
         <figure>
           <div class="phone">
             <div class="screen centered">
-              <span class="overprint" data-text="그린스텝" style="font-size: 1.7rem"
+              <span class="wordmark" style="font-size: 1.7rem"
                 >그린스텝</span
               >
               <p style="font-size: 1.05rem; font-weight: 500; line-height: 1.6">
@@ -668,7 +697,7 @@
         <figure>
           <div class="phone">
             <div class="screen">
-              <span class="overprint" data-text="그린스텝" style="font-size: 1.3rem"
+              <span class="wordmark" style="font-size: 1.3rem"
                 >그린스텝</span
               >
 
@@ -729,7 +758,7 @@
         <figure>
           <div class="phone">
             <div class="screen" style="gap: 14px">
-              <span class="overprint" data-text="그린스텝" style="font-size: 1.1rem"
+              <span class="wordmark" style="font-size: 1.1rem"
                 >그린스텝</span
               >
               <div class="row" style="align-items: flex-end">
@@ -744,7 +773,7 @@
               <div class="rule"></div>
 
               <div class="stack">
-                <div class="card">
+                <div class="card done">
                   <span class="icon">☕</span>
                   <span class="grow">
                     <span class="title" style="display: block">텀블러 사용</span>
@@ -752,7 +781,7 @@
                   </span>
                   <span class="stamp on">✓</span>
                 </div>
-                <div class="card">
+                <div class="card done">
                   <span class="icon">🚌</span>
                   <span class="grow">
                     <span class="title" style="display: block"
@@ -762,7 +791,7 @@
                   </span>
                   <span class="stamp on">✓</span>
                 </div>
-                <div class="card">
+                <div class="card done">
                   <span class="icon">🥗</span>
                   <span class="grow">
                     <span class="title" style="display: block">채식 한 끼</span>
@@ -801,8 +830,8 @@
           <figcaption>
             <b>오늘의 실천</b>
             <span
-              >카드를 탭하면 도장이 찍힙니다. 손으로 찍은 도장처럼 살짝 기울고,
-              두 번째 잉크판이 어긋나 겹칩니다.</span
+              >카드를 탭하면 도장이 찍힙니다. 손으로 찍은 도장처럼 살짝
+              기울어지고, 끝난 항목은 카드째 물빛으로 물듭니다.</span
             >
             <code>/today</code>
           </figcaption>
@@ -1009,8 +1038,8 @@
             <div class="screen" style="gap: 16px">
               <div class="row">
                 <span
-                  class="overprint grow"
-                  data-text="그린스텝"
+                  class="wordmark grow"
+                 
                   style="font-size: 1.1rem"
                   >그린스텝</span
                 >

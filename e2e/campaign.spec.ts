@@ -58,12 +58,15 @@ test.describe("참가자 흐름", () => {
   test("같은 자리를 다시 고르면 기존 기록으로 이어진다", async ({ page }) => {
     await login(page);
     const before = await page.locator('[data-stamped="true"]').count();
+    // 그 자리에 이미 참가한 적이 있으면 처음 정한 닉네임이 유지된다.
+    // 그래서 입력한 이름이 아니라 화면에 뜬 이름을 기준으로 삼는다.
+    const greeting = await page.locator("header p").first().innerText();
 
     // 세션을 버리고 처음부터 다시 참가한다.
     await page.context().clearCookies();
     await login(page);
 
-    await expect(page.getByText(NICKNAME)).toBeVisible();
+    await expect(page.locator("header p").first()).toHaveText(greeting);
     await expect(page.locator('[data-stamped="true"]')).toHaveCount(before);
   });
 

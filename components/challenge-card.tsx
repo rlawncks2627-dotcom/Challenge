@@ -40,7 +40,11 @@ export function ChallengeCard({
         onClick={onToggle}
         disabled={busy || locked}
         aria-pressed={done}
-        className="flex w-full items-center gap-4 rounded-sm border-2 border-rule bg-paper-sunk px-4 py-4 text-left transition-transform active:translate-y-[1px] disabled:opacity-60"
+        className={`flex w-full items-center gap-4 rounded-sm border-2 px-4 py-4 text-left shadow-[var(--shadow)] transition-all active:translate-y-[1px] disabled:opacity-60 ${
+          done
+            ? "border-green/40 bg-mint/45"
+            : "border-rule bg-paper/70 hover:bg-paper"
+        }`}
       >
         <span aria-hidden className="text-2xl leading-none">
           {challenge.icon}

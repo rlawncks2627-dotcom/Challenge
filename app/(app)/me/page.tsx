@@ -88,7 +88,7 @@ export default async function MePage() {
         <form action={signOut}>
           <button
             type="submit"
-            className="w-full rounded-sm border-2 border-ink px-4 py-3.5 font-semibold"
+            className="w-full rounded-full border-2 border-green/50 bg-paper/60 px-4 py-3.5 font-bold"
           >
             이 기기에서 나가기
           </button>

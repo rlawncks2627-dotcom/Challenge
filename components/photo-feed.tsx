@@ -89,7 +89,7 @@ export function PhotoFeed({
           type="button"
           onClick={loadMore}
           disabled={loading}
-          className="w-full rounded-sm border-2 border-ink px-4 py-3.5 font-semibold disabled:opacity-55"
+          className="w-full rounded-full border-2 border-green/50 bg-paper/60 px-4 py-3.5 font-bold disabled:opacity-55"
         >
           {loading ? "불러오는 중" : "더 보기"}
         </button>

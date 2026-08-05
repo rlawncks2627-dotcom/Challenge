@@ -103,7 +103,7 @@ function cellStyle(count: number, inPeriod: boolean): string {
   if (count === 0) {
     return inPeriod ? "border-rule" : "border-rule/40";
   }
-  if (count >= 4) return "border-green bg-green text-paper";
-  if (count >= 2) return "border-green bg-green/55 text-paper";
-  return "border-green bg-green/25 text-ink";
+  if (count >= 4) return "border-green bg-green text-white";
+  if (count >= 2) return "border-green/70 bg-green/60 text-white";
+  return "border-green/50 bg-mint/60 text-ink";
 }

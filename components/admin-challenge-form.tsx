@@ -155,7 +155,7 @@ export function AdminChallengeForm({
         <div className="flex items-center gap-3">
           <button
             type="submit"
-            className="rounded-sm bg-green px-4 py-2.5 text-sm font-semibold text-paper"
+            className="rounded-full bg-accent px-5 py-2.5 text-sm font-bold text-white shadow-[var(--shadow)]"
           >
             {challenge ? "저장" : "항목 추가"}
           </button>

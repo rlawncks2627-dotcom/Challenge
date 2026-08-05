@@ -22,17 +22,20 @@ export function Co2Gauge({
         <p className="text-sm text-ink-soft">/ 목표 {formatCo2(goalG)}</p>
       </div>
 
+      {/* 물이 차오르듯. 지브리의 하늘색에서 잎사귀색으로 옮겨간다. */}
       <div
         role="progressbar"
         aria-valuenow={percent}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label="목표 달성률"
-        className="h-5 w-full border-2 border-ink"
+        className="h-6 w-full overflow-hidden rounded-full border-2 border-green/30 bg-paper/70"
       >
+        {/* 1% 도 눈에 보여야 한다. 첫날 참가자에게 '아무것도 안 됐다'로
+            보이면 그 게이지는 제 일을 못 하는 것이다. */}
         <div
-          className="h-full bg-green transition-[width] duration-500"
-          style={{ width: `${percent}%` }}
+          className="h-full rounded-full bg-gradient-to-r from-mint to-green transition-[width] duration-700"
+          style={{ width: `${percent}%`, minWidth: percent > 0 ? "1.25rem" : 0 }}
         />
       </div>
 

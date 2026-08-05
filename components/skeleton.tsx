@@ -6,7 +6,7 @@ export function SkeletonLine({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden
-      className={`animate-pulse rounded-sm bg-paper-sunk ${className}`}
+      className={`animate-pulse rounded-sm bg-sage/25 ${className}`}
     />
   );
 }

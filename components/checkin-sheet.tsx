@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { BUTTON_OUTLINE, BUTTON_PRIMARY } from "@/components/form-styles";
 import { resizeToWebP } from "@/lib/image";
 
 export type SheetSubmit = { photo: Blob | null; memo: string };
@@ -83,7 +84,7 @@ export function CheckinSheet({
         aria-modal="true"
         aria-label={`${title} 기록하기`}
         tabIndex={-1}
-        className="relative flex w-full max-w-sm flex-col gap-5 rounded-t-lg border-t-4 border-green bg-paper px-6 pt-6 pb-8"
+        className="relative flex w-full max-w-sm flex-col gap-5 rounded-t-lg border-t-4 border-green/50 bg-paper px-6 pt-6 pb-8 shadow-[var(--shadow-lift)]"
       >
         <div className="flex flex-col gap-1">
           <p className="text-sm font-semibold text-ink-soft">기록하기</p>
@@ -114,7 +115,7 @@ export function CheckinSheet({
             accept="image/*"
             capture="environment"
             onChange={(e) => pickPhoto(e.target.files?.[0])}
-            className="w-full rounded-sm border-2 border-rule bg-paper-sunk px-3 py-3 text-sm file:mr-3 file:rounded-sm file:border-0 file:bg-ink file:px-3 file:py-1.5 file:text-paper"
+            className="w-full rounded-sm border-2 border-rule bg-paper/70 px-3 py-3 text-sm file:mr-3 file:rounded-full file:border-0 file:bg-sage file:px-3 file:py-1.5 file:font-bold file:text-ink"
           />
         </div>
 
@@ -132,7 +133,7 @@ export function CheckinSheet({
             rows={2}
             onChange={(e) => setMemo(e.target.value)}
             placeholder="오늘은 어땠나요?"
-            className="w-full resize-none rounded-sm border-2 border-rule bg-paper-sunk px-3 py-3 text-ink placeholder:text-ink-soft placeholder:opacity-45 focus:border-green focus:outline-none"
+            className="w-full resize-none rounded-sm border-2 border-rule bg-paper/70 px-3 py-3 text-ink placeholder:text-ink-soft placeholder:opacity-50 focus:border-green focus:bg-paper focus:outline-none"
           />
         </div>
 
@@ -143,18 +144,14 @@ export function CheckinSheet({
         )}
 
         <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 rounded-sm border-2 border-ink px-4 py-3.5 font-semibold"
-          >
+          <button type="button" onClick={onClose} className={`flex-1 ${BUTTON_OUTLINE}`}>
             닫기
           </button>
           <button
             type="button"
             onClick={submit}
             disabled={busy}
-            className="flex-[2] rounded-sm bg-green px-4 py-3.5 font-semibold text-paper transition-transform active:translate-y-[2px] disabled:opacity-55"
+            className={`flex-[2] ${BUTTON_PRIMARY}`}
           >
             {busy ? "기록하는 중" : "완료로 표시"}
           </button>

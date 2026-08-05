@@ -8,7 +8,7 @@ import { SubmitButton } from "@/components/submit-button";
 import { joinWithRoster, type JoinFormState } from "@/lib/actions/join";
 import { CLASSES, GRADES, STUDENT_NUMBERS } from "@/lib/roster";
 
-const SELECT = `${INPUT} appearance-none text-center`;
+const SELECT = `${INPUT} appearance-none pr-7 text-center`;
 
 export function JoinForm({ code }: { code: string }) {
   const [state, formAction] = useActionState<JoinFormState, FormData>(
@@ -101,24 +101,35 @@ function Picker({
       <label htmlFor={id} className="text-xs text-ink-soft">
         {label}
       </label>
-      <select
-        id={id}
-        name={id}
-        required
-        defaultValue=""
-        aria-invalid={invalid || undefined}
-        className={SELECT}
-      >
-        <option value="" disabled>
-          –
-        </option>
-        {options.map((value) => (
-          <option key={value} value={value}>
-            {value}
-            {unit}
+
+      {/* appearance-none 으로 기본 화살표가 사라지므로 직접 그린다.
+          없으면 고를 수 있는 칸인지 알 수 없다. */}
+      <div className="relative">
+        <select
+          id={id}
+          name={id}
+          required
+          defaultValue=""
+          aria-invalid={invalid || undefined}
+          className={SELECT}
+        >
+          <option value="" disabled>
+            –
           </option>
-        ))}
-      </select>
+          {options.map((value) => (
+            <option key={value} value={value}>
+              {value}
+              {unit}
+            </option>
+          ))}
+        </select>
+        <span
+          aria-hidden
+          className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-ink-soft"
+        >
+          ▾
+        </span>
+      </div>
     </div>
   );
 }
