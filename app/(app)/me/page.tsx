@@ -81,7 +81,7 @@ export default async function MePage() {
 
       <section className="flex flex-col gap-3 border-t-2 border-rule pt-6">
         <p className="text-sm text-ink-soft">
-          이 기기에서 나가도 기록은 남습니다. 다시 들어올 때 초대코드와{" "}
+          로그아웃해도 기록은 남아요. 다시 들어올 때 초대코드와{" "}
           {formatSlot(slot.grade, slot.classNo, slot.studentNo)}를 고르면
           이어집니다.
         </p>
@@ -90,7 +90,7 @@ export default async function MePage() {
             type="submit"
             className="w-full rounded-full border-2 border-green/50 bg-paper/60 px-4 py-3.5 font-bold"
           >
-            이 기기에서 나가기
+            로그아웃
           </button>
         </form>
       </section>

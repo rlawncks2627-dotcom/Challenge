@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { CharacterRow } from "@/components/characters";
 import { InviteCodeForm } from "@/components/invite-code-form";
 import { Wordmark } from "@/components/wordmark";
 import { getCurrentParticipant } from "@/lib/participant";
@@ -11,18 +12,21 @@ export default async function Home() {
 
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-10 px-6 py-12">
-      <header className="flex flex-col gap-6">
+      <header className="flex flex-col items-center gap-5 text-center">
+        {/* 글자보다 먼저 눈에 들어와야 하는 자리. */}
+        <CharacterRow />
+
         <Wordmark className="text-3xl" />
 
-        {/* 이 앱이 무엇인지 한 문장으로 설명하는 자리.
-            추상적인 구호 대신 실제 데이터에 있는 숫자를 쓴다. */}
-        <p className="text-xl leading-relaxed font-medium">
+        {/* 이 앱이 무엇인지 한 문장으로. 초등학교 2학년이 읽을 문장이라
+            추상적인 구호 대신 실제 항목에 붙은 숫자를 쓴다. */}
+        <p className="text-lg leading-relaxed font-medium">
           오늘 텀블러 한 번이{" "}
           <span className="font-display text-2xl text-green">25g</span>
-          입니다.
+          이에요.
           <br />
           <span className="text-ink-soft">
-            혼자서는 그램이지만, 다 같이 모으면 킬로그램이 됩니다.
+            혼자서는 조금이지만, 다 같이 모으면 나무 한 그루가 돼요.
           </span>
         </p>
       </header>

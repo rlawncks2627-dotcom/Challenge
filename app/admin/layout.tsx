@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 /** 관리 화면은 검색엔진에 노출될 이유가 없다. */
 export const metadata: Metadata = {
-  title: "캠페인 관리 — 그린스텝",
+  title: "캠페인 관리 — 친환경 챌린지",
   robots: { index: false, follow: false },
 };
 

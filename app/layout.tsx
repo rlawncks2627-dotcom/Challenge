@@ -30,8 +30,8 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "그린스텝 — 친환경 행동 실천 챌린지",
-  description: "매일 작은 실천을 모아 함께 탄소를 줄이는 캠페인 앱",
+  title: "친환경 챌린지",
+  description: "매일 작은 실천을 모아 함께 탄소를 줄이는 우리 반 캠페인",
 };
 
 export const viewport = {

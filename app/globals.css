@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
- * 그린스텝 — 지브리 배경화처럼.
+ * 친환경 챌린지 — 지브리 배경화처럼.
  *
  * 참고한 것: 토토로의 숲(연둣빛 나뭇잎과 하늘), 포뇨의 바다(맑은 시안),
  * 키키의 가게 간판(빛바랜 나무와 크림색 페인트).
@@ -34,6 +34,10 @@
   --accent: #e2563d; /* 지금 누르라는 곳에만 */
   --berry: #b0577f; /* 무언가 잘못됐을 때 */
 
+  /* 워드마크 전용. 자막 스티커처럼 채움과 테두리가 따로 논다. */
+  --mark-fill: #2f6fd0;
+  --mark-outline: #a3c9a8;
+
   --shadow: 0 2px 10px rgb(53 71 60 / 0.09);
   --shadow-lift: 0 4px 16px rgb(53 71 60 / 0.13);
   --grain: 0.28;
@@ -58,6 +62,9 @@
     --sky: #97c5e2;
     --accent: #ff7b5e;
     --berry: #e894b8;
+
+    --mark-fill: #7cb8ff;
+    --mark-outline: #274b39;
 
     --shadow: 0 2px 10px rgb(0 0 0 / 0.35);
     --shadow-lift: 0 4px 16px rgb(0 0 0 / 0.45);
@@ -112,14 +119,71 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.62' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
 }
 
-/* 워드마크. 손으로 칠한 간판 글씨처럼 살짝 떠 있다. */
+/*
+ * 워드마크 — 방송 자막 스티커처럼 두툼한 손글씨.
+ * 초등학교 2학년이 첫 화면에서 바로 알아볼 수 있어야 한다.
+ * 굵은 글자 + 한 겹 두른 테두리 + 살짝 기울인 각도, 셋이 그 느낌을 만든다.
+ */
 .wordmark {
   display: inline-block;
   font-family: var(--font-display), sans-serif;
-  color: var(--green);
+  color: var(--mark-fill);
   line-height: 1.15;
   letter-spacing: 0.01em;
-  text-shadow: 0 2px 0 color-mix(in srgb, var(--sage) 55%, transparent);
+  transform: rotate(-2deg);
+  /* 테두리는 text-stroke 대신 8방향 그림자로 두른다.
+     한글은 획이 많아 text-stroke 를 쓰면 속이 메워진다. */
+  text-shadow:
+    2px 0 0 var(--mark-outline),
+    -2px 0 0 var(--mark-outline),
+    0 2px 0 var(--mark-outline),
+    0 -2px 0 var(--mark-outline),
+    2px 2px 0 var(--mark-outline),
+    -2px 2px 0 var(--mark-outline),
+    2px -2px 0 var(--mark-outline),
+    -2px -2px 0 var(--mark-outline),
+    0 5px 0 color-mix(in srgb, var(--mark-outline) 60%, transparent);
+}
+
+/* 첫 화면의 캐릭터들. 물 위에 뜬 것처럼 각자 다른 박자로 오르내린다. */
+.bob {
+  animation: bob 4.5s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  will-change: transform;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--tilt, 0deg));
+  }
+  50% {
+    transform: translateY(-9px) rotate(calc(var(--tilt, 0deg) * -1));
+  }
+}
+
+/* 함께 모은 결과의 나무. 바람에 아주 조금 흔들린다. */
+.sway {
+  transform-origin: 50% 100%;
+  animation: sway 6s ease-in-out infinite;
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-1.2deg);
+  }
+  50% {
+    transform: rotate(1.2deg);
+  }
+}
+
+/* 자라는 부분은 값이 바뀔 때 부드럽게 이어진다. */
+.grow-part {
+  transition:
+    transform 900ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 700ms ease;
+  transform-origin: 50% 100%;
 }
 
 /*

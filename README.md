@@ -1,4 +1,4 @@
-# 그린스텝
+# 친환경 챌린지
 
 학교·회사가 기간을 정해 여는 친환경 실천 캠페인 웹앱.
 
@@ -50,8 +50,6 @@ npm run dev
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
-# 배포 환경에서만 필요. 이메일 확인 링크가 돌아올 주소.
-NEXT_PUBLIC_SITE_URL=https://<배포 도메인>
 ```
 
 | 명령 | 하는 일 |
@@ -66,7 +64,7 @@ E2E 는 사전 준비가 필요 없다. 시드 캠페인(`GREEN2026`)의 3학년
 
 ## 데이터베이스
 
-`supabase/migrations/` 의 SQL 을 번호 순서대로 적용한다. 새 프로젝트라면 그대로 실행하면 시드 캠페인(`GREEN2026`)과 실천 항목 8개까지 들어간다.
+`supabase/migrations/` 의 SQL 을 번호 순서대로 적용한다. 새 프로젝트라면 그대로 실행하면 시드 캠페인(`GREEN2026`)과 실천 항목 14개까지 들어간다.
 
 핵심 설계 두 가지:
 
@@ -75,9 +73,7 @@ E2E 는 사전 준비가 필요 없다. 시드 캠페인(`GREEN2026`)의 3학년
 
 ## 운영 시작 전 해야 할 일
 
-1. **Supabase 인증 설정**
-   - Authentication → URL Configuration 에 배포 도메인을 등록한다. 그래야 이메일 확인 링크가 돌아온다.
-   - 기본 SMTP 는 발송량 제한이 빡빡하다. 참가자가 몰리는 캠페인 첫날에 확인 메일이 막힐 수 있으므로, 커스텀 SMTP 를 붙이거나 이메일 확인을 끄고 초대코드를 신뢰하는 쪽을 택한다.
+1. **초대코드 관리.** 참가에 필요한 비밀은 초대코드 하나뿐이다. 학급·부서 안에서만 공유한다.
 
 2. **시드 코드 교체** — 저장소에 적힌 기본값은 개발용이다.
    - 관리자 코드(`ADMIN2026`): `/admin` 에서 진입 후 캠페인 설정에서 변경
@@ -98,7 +94,4 @@ E2E 는 사전 준비가 필요 없다. 시드 캠페인(`GREEN2026`)의 3학년
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 
-   `NEXT_PUBLIC_SITE_URL` 은 없어도 된다. 없으면 요청 헤더(`x-forwarded-host` / `x-forwarded-proto`)에서 주소를 유추하는데, Vercel 은 두 헤더를 채워준다. 커스텀 도메인을 붙여 접속 경로가 여러 개가 되면 그때 명시한다.
-3. 배포가 끝나면 그 도메인을 Supabase → Authentication → URL Configuration 의 **Site URL** 과 **Redirect URLs** 에 추가한다. 이걸 빼면 이메일 확인 링크가 돌아오지 못한다.
-
-이후로는 `main` 에 push 할 때마다 자동 배포된다.
+이메일을 쓰지 않으므로 Supabase 쪽에 따로 등록할 도메인이나 SMTP 설정은 없다. 이후로는 `main` 에 push 할 때마다 자동 배포된다.

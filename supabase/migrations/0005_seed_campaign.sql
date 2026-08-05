@@ -12,7 +12,7 @@ insert into public.campaigns (
   name, invite_code, admin_code_hash, start_date, end_date, goal_co2_g
 )
 values (
-  '2026 그린스텝 캠페인',
+  '2026 친환경 챌린지',
   'GREEN2026',
   extensions.crypt('ADMIN2026', extensions.gen_salt('bf')),
   date '2026-08-01',

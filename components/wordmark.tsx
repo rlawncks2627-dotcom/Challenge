@@ -1,12 +1,14 @@
+export const APP_NAME = "친환경 챌린지";
+
 /**
  * 워드마크.
- * 키키의 가게 간판처럼, 손으로 칠해 살짝 떠 있는 글씨.
+ * 방송 자막 스티커처럼 두툼하게, 테두리를 한 겹 두르고 살짝 기울여서.
  */
 export function Wordmark({ className = "" }: { className?: string }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 ${className}`}>
+    <span className={`inline-flex items-center gap-2 ${className}`}>
       <span aria-hidden>🌿</span>
-      <span className="wordmark">그린스텝</span>
+      <span className="wordmark">{APP_NAME}</span>
     </span>
   );
 }

@@ -1,3 +1,4 @@
+import { GrowingTree } from "@/components/growing-tree";
 import { describeCo2, formatCo2, goalProgress } from "@/lib/co2";
 
 /**
@@ -15,6 +16,9 @@ export function Co2Gauge({
 
   return (
     <section className="flex flex-col gap-4" aria-label="캠페인 공동 목표">
+      {/* 숫자보다 먼저 눈에 들어오는 자리. 얼마나 왔는지를 나무가 말해준다. */}
+      <GrowingTree percent={percent} className="self-center" />
+
       <div className="flex items-baseline gap-2">
         <p className="font-display text-4xl leading-none text-green">
           {formatCo2(totalG)}
